@@ -2,6 +2,7 @@ import { app, session, BrowserWindow, ipcMain  } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
 import installExtension, { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import {HandleTwoWayCall} from './api';
 
 const reduxDevToolsPath = path.join(
   os.homedir(),
@@ -39,7 +40,7 @@ function createWindow() {
               win.webContents.openDevTools();
           });
     win.webContents.openDevTools();
-
+ 
   });
 
     // Hot Reloading on 'node_modules/.bin/electronPath'
@@ -57,10 +58,8 @@ function createWindow() {
 } 
 
 app.whenReady().then(() => { 
-
-
+  ipcMain.handle('twoWayCall',HandleTwoWayCall);
   createWindow();
-
 });
 
 app.on('activate', () => {

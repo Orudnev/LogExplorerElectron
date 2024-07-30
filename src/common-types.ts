@@ -37,7 +37,7 @@ export interface IFilterPanelRowValue {
   export interface ILogRow {
     id: number;
     RowLineNumber: number;
-    Severety: string;
+    Severity: string;
     Date: Date | undefined;
     ThreadId: number | undefined;
     Comment: string;

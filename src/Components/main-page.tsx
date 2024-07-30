@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { DataGridPro, GridColDef, GridCellParams, useGridApiRef } from '@mui/x-data-grid-pro';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
-import * as Api from '../web-api-wrapper';
+import { ApiWrapper } from '../api-wrapper';
 import { MultiSelect, Option } from './multi-select';
 import { ToolbarButton, ToolbarCheckButton } from './toolbar-button';
 import { ILogRow, LogRowResult,IFilterPanelRowValue } from '../common-types';
@@ -16,7 +16,7 @@ import { FilterPanelTotals } from './filter-panel-totals';
 //"proxy": "http://localhost:5000/api/",
 export function MainPage() {
     let dfltRows: ILogRow[] = [];
-    let dfltCurrRow: ILogRow = { id: -1, RowLineNumber: -1, Severety: "", Date: undefined, ThreadId: undefined, Comment: "" };
+    let dfltCurrRow: ILogRow = { id: -1, RowLineNumber: -1, Severity: "", Date: undefined, ThreadId: undefined, Comment: "" };
     const [allRowList, setAllRowList] = useState(dfltRows);
     const [rowList, setRowList] = useState(dfltRows);
     const [currRow, setCurrRow] = useState<ILogRow>(dfltCurrRow);
@@ -68,16 +68,19 @@ export function MainPage() {
                         let tsTo = dateFrom?.valueOf();
                         let svr = severityFltValue.reduce((accum: string, curItm: string) => accum + curItm, "");
                         if (tsFrom && tsTo) {
-                            Api.GetLogRows(AppSessionData.prop('LogFilesFolder'), tsFrom, tsTo, svr, (resp: any) => {
-                                if (resp.response) {
-                                    setAllRowList(resp.response);
-                                    setRowList([...resp.response]);
+                            ApiWrapper.GetLogRows(AppSessionData.prop('LogFilesFolder'), tsFrom, tsTo, svr)
+                            .then(resp=>{
+                                setIsLoading(false);
+                                if(resp.isOk && resp.result){
+                                    setAllRowList(resp.result);
+                                    setRowList([...resp.result]);
                                     setError("");
                                 } else {
-                                    setError(resp.error);
+                                    if(resp.error){
+                                        setError(resp.error);
+                                    }
                                 }
-                                setIsLoading(false);
-                            });
+                            })
                         }
                     }} size='56' />
                 </div>

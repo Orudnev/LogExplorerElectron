@@ -14,7 +14,7 @@ import './app.css';
 import './images.css';
 import { AppSessionData, TAppSettigs } from './Components/AppData';
 import { store, TAllActions, IAppState } from './Reducers/index';
-import * as Api from './web-api-wrapper';
+import * as Api from './api-wrapper';
 import { MainPage } from './Components/main-page';
 import { Settings } from './Components/settings';
 

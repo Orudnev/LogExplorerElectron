@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Input } from '@mui/base/Input';
 import { SelectAndEditItemList } from './SelectAndEditItemList/select-and-edit-item-list';
 import { ToolbarButton, ToolbarCheckButton } from './toolbar-button';
-import * as Api from '../web-api-wrapper';
+import * as Api from '../api-wrapper';
 import { IFilterSet, IFilterSetFolder, ILogRow, IFilterPanel, IFilterPanelRow, IFilterPanelRowValue } from '../common-types';
 import { AppSessionData } from './AppData';
 import { FilterPanelTotals } from './filter-panel-totals';
