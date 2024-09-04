@@ -2,8 +2,8 @@ import { BrowserWindow } from 'electron';
 import * as fs  from 'fs';
 import * as path from 'path';
 import {deleteFilterSetFolder, processLineByLine, readFilterSetFile, updateFilterSetFolder,updateFilterSetFolderAsync} from './files-helper';
-import { ICommonReslult, TApiTwoWayCall, IGetLogRows } from '../src/api-wrapper';
-import { ILogRow } from '../src/common-types';
+import { ICommonResult, TApiTwoWayCall, IGetLogRows, ILoadFilterSetFile, ISaveFolder } from '../src/api-wrapper';
+import { IFilterSetFolder, ILogRow } from '../src/common-types';
 
 export async function HandleTwoWayCall(event: any, payload: TApiTwoWayCall) {
     const webContents = event.sender;
@@ -12,11 +12,43 @@ export async function HandleTwoWayCall(event: any, payload: TApiTwoWayCall) {
         return;
     }
     switch (payload.method) {
+        case 'LoadFilterSetFile':
+            return LoadFilterSetFileImpl(payload);
         case 'GetLogRows':
             return GetLogRowsImpl(payload);
+        case 'SaveFolder':
+            return SaveFolderImpl(payload);
     }
 }
 
+const defaultFilterSetFolder: IFilterSetFolder[] = [
+    { 
+        name: 'Default', 
+        description: '', 
+        filterSetList: [{ name: "TestFilterSet", description: "", filterRows: [{searchCriteria:"",mustSkip:false}]}] 
+    } 
+];
+
+function getDefaultFilterSetFilePath() {
+    const defaultFilterSetFile = 'defaultFilterSet.json';
+    let filterSetFolder = __dirname + '\\filterset';
+    if (!fs.existsSync(filterSetFolder)) {
+      fs.mkdirSync(filterSetFolder);
+    }
+    let fileName = defaultFilterSetFile;
+    let filePath = filterSetFolder + '\\' + fileName;
+    return filePath;
+  }
+
+function LoadFilterSetFileImpl(params:ILoadFilterSetFile):IFilterSetFolder[]{
+    let filePath = getDefaultFilterSetFilePath();
+    if (!fs.existsSync(filePath)) {
+      return defaultFilterSetFolder;
+    }
+    let fileBody = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
+    let result:IFilterSetFolder[] = JSON.parse(fileBody);
+    return result;
+}
 
 
 async function GetLogRowsImpl(params: IGetLogRows) {
@@ -45,7 +77,7 @@ async function GetLogRowsImpl(params: IGetLogRows) {
         return severityStr.includes(sevValue);
     }
 
-    let response: ICommonReslult<ILogRow[]> = {
+    let response: ICommonResult<ILogRow[]> = {
         isOk: false,
         result: undefined,
         error: undefined
@@ -126,4 +158,19 @@ async function GetLogRowsImpl(params: IGetLogRows) {
         response.isOk = true;
     }
     return response;
+}
+
+async function SaveFolderImpl(params:ISaveFolder){
+    let fsetFolder:IFilterSetFolder = params.folder;
+    let filterSetFileData = LoadFilterSetFileImpl({method:'LoadFilterSetFile'});
+    let itemIndex = filterSetFileData.findIndex(itm => itm.name === fsetFolder.name);
+    if (itemIndex === -1) {
+      filterSetFileData.push(fsetFolder);
+    } else {
+      filterSetFileData[itemIndex] = fsetFolder;
+    }
+    let updatedFileJson = JSON.stringify(filterSetFileData);
+    let filePath = getDefaultFilterSetFilePath();
+  
+    fs.writeFileSync(filePath, updatedFileJson,{flag:'w'});    
 }

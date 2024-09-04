@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Input } from '@mui/base/Input';
 import { SelectAndEditItemList } from './SelectAndEditItemList/select-and-edit-item-list';
 import { ToolbarButton, ToolbarCheckButton } from './toolbar-button';
-import * as Api from '../api-wrapper';
+//import * as Api from '../api-wrapper';
+import { ApiWrapper } from '../api-wrapper';
 import { IFilterSet, IFilterSetFolder, ILogRow, IFilterPanel, IFilterPanelRow, IFilterPanelRowValue } from '../common-types';
 import { AppSessionData } from './AppData';
 import { FilterPanelTotals } from './filter-panel-totals';
@@ -82,21 +83,24 @@ export function FilterPanel(props: IFilterPanel) {
     const [selectedFilterSet, setSelectedFilterSet] = useState('');
     const [groupFilter, setGroupFilter] = useState(0);
     useEffect(() => {
-        Api.LoadFilterSetFile((fList: IFilterSetFolder[]) => {
-            setFilterFileContent(fList);
-            let storedFolder =
-                fList.find(itm => itm.name.toLocaleLowerCase() === AppSessionData.prop('LastSelectedFolder').toLocaleLowerCase());
-            if (storedFolder) {
-                setSelectedFolder(storedFolder.name);
-                let storedFset =
-                    storedFolder.filterSetList
-                        .find(itm => itm.name.toLocaleLowerCase() === AppSessionData.prop('LastSelectedFilterSet').toLocaleLowerCase());
-                if (storedFset) {
-                    setSelectedFilterSet(storedFset.name);
-                    setFrows(storedFset.filterRows);
+        ApiWrapper.LoadFilterSetFile() 
+            .then((flist) => {
+                if (true) {
+                    setFilterFileContent(flist);
+                    let storedFolder =
+                        flist.find(itm => itm.name.toLocaleLowerCase() === AppSessionData.prop('LastSelectedFolder').toLocaleLowerCase());
+                    if (storedFolder) {
+                        setSelectedFolder(storedFolder.name);
+                        let storedFset =
+                            storedFolder.filterSetList
+                                .find(itm => itm.name.toLocaleLowerCase() === AppSessionData.prop('LastSelectedFilterSet').toLocaleLowerCase());
+                        if (storedFset) {
+                            setSelectedFilterSet(storedFset.name);
+                            setFrows(storedFset.filterRows);
+                        }
+                    }
                 }
-            }
-        })
+            })
     }, []);
     let folderList = filterFileContent.length > 0 ? filterFileContent.map(itm => itm.name) : [];
     let selectedFolderListItem = (folderList.length > 0 && selectedFolder) ? filterFileContent.find(itm => itm.name === selectedFolder) : undefined;
@@ -116,7 +120,8 @@ export function FilterPanel(props: IFilterPanel) {
         }
         let folderItem = filterFileContent.find(itm => itm.name === selectedFolder);
         if (folderItem) {
-            Api.SaveFolder(folderItem, (resp) => {
+            ApiWrapper.SaveFolder(folderItem)
+            .then(response=>{
                 let s = 1;
             });
         }

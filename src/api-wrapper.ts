@@ -1,7 +1,7 @@
 import axios from "axios";
-import { IApiResponse, IFilterSetFolder, ILogRow } from "./common-types";
+import { IApiResponse, IFilterSetFolder,IFilterSet, ILogRow } from "./common-types";
 
-export interface ICommonReslult<TResult>{
+export interface ICommonResult<TResult>{
     isOk:boolean;
     result?: TResult;
     error?: string;
@@ -15,7 +15,16 @@ export interface IGetLogRows{
     severityStr:string;
 }
 
-export type TApiTwoWayCall = IGetLogRows;
+export interface ILoadFilterSetFile{
+    method:'LoadFilterSetFile';
+}
+
+export interface ISaveFolder{
+    method:'SaveFolder';
+    folder:IFilterSetFolder;
+}
+
+export type TApiTwoWayCall = IGetLogRows|ILoadFilterSetFile|ISaveFolder;
 
 
 async function MakeTwoWayCall(payload:TApiTwoWayCall){
@@ -23,10 +32,21 @@ async function MakeTwoWayCall(payload:TApiTwoWayCall){
 }
 
 class ApiWrapperClass{
-    GetLogRows(folder:string,dfr:number,dto:number,sevStr:string):Promise<ICommonReslult<ILogRow[]>>{
+    GetLogRows(folder:string,dfr:number,dto:number,sevStr:string):Promise<ICommonResult<ILogRow[]>>{
         let result = MakeTwoWayCall({method:'GetLogRows',logFilesFolder:folder,dFrom:dfr,dTo:dto,severityStr:sevStr});
         return result;
     } 
+
+    LoadFilterSetFile(fName:string=""):Promise<IFilterSetFolder[]>{
+        let result = MakeTwoWayCall({method:'LoadFilterSetFile'});
+        return result;        
+    }
+
+    SaveFolder(fld:IFilterSetFolder):Promise<ICommonResult<void>>{
+        let result = MakeTwoWayCall({method:'SaveFolder',folder:fld});
+        return result;        
+    }
+
 }
 
 export const ApiWrapper = new ApiWrapperClass();
@@ -38,15 +58,16 @@ export function Dir(handler:(fileList:string[])=>void){
     httpGet(srvUrl,undefined,handler);
 }
 
-export function LoadFilterSetFile(handler:(resp:IFilterSetFolder[])=>void){
-    let srvUrl = baseUrl+'filterSetFile';
-    httpGet(srvUrl,undefined,handler);
-} 
+// export function LoadFilterSetFile(handler:(resp:IFilterSetFolder[])=>void){
+//     let srvUrl = baseUrl+'filterSetFile';
+//     httpGet(srvUrl,undefined,handler);
+// } 
 
-export function SaveFolder(payload:IFilterSetFolder,handler:(resp:IApiResponse)=>void){
-    let srvUrl = baseUrl+'updateFilterSetFolder';
-    httpPost(srvUrl,undefined,payload,handler);
-}
+// export function SaveFolder(payload:IFilterSetFolder,handler:(resp:IApiResponse)=>void){
+
+//     let srvUrl = baseUrl+'updateFilterSetFolder';
+//     httpPost(srvUrl,undefined,payload,handler);
+// }
 
 function httpGet(addr:string,params:any,handler:any){
     axios({
