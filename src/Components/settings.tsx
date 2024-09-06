@@ -51,6 +51,10 @@ export function Settings(props: any) {
             <div className='settings-body'>
                 <SettingsStringItem labelText='Путь к папке с Log файлами:' propId='LogFilesFolder' />
             </div>
+            <div className='settings-body'>
+                <SettingsStringItem labelText='Путь к файлу с фильтрами:' propId='FilterSetFile' />
+            </div>
+
             {/* <SettingsBoolItem labelText='Say answer' propId={'PlCfg_SayAnswer'} />
             <SettingsBoolItem labelText='Listen answer' propId={'PlCfg_ListenAnswer'} /> */}
         </div>

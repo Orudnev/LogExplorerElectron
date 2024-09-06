@@ -1,9 +1,10 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, app } from 'electron';
 import * as fs  from 'fs';
 import * as path from 'path';
 import {deleteFilterSetFolder, processLineByLine, readFilterSetFile, updateFilterSetFolder,updateFilterSetFolderAsync} from './files-helper';
 import { ICommonResult, TApiTwoWayCall, IGetLogRows, ILoadFilterSetFile, ISaveFolder } from '../src/api-wrapper';
 import { IFilterSetFolder, ILogRow } from '../src/common-types';
+
 
 export async function HandleTwoWayCall(event: any, payload: TApiTwoWayCall) {
     const webContents = event.sender;
@@ -18,7 +19,14 @@ export async function HandleTwoWayCall(event: any, payload: TApiTwoWayCall) {
             return GetLogRowsImpl(payload);
         case 'SaveFolder':
             return SaveFolderImpl(payload);
+        case 'CurrDir':
+            return CurrDirImpl(payload);
     }
+}
+
+
+async function CurrDirImpl(pl:any){
+    return app.getAppPath();
 }
 
 const defaultFilterSetFolder: IFilterSetFolder[] = [
@@ -29,19 +37,9 @@ const defaultFilterSetFolder: IFilterSetFolder[] = [
     } 
 ];
 
-function getDefaultFilterSetFilePath() {
-    const defaultFilterSetFile = 'defaultFilterSet.json';
-    let filterSetFolder = __dirname + '\\filterset';
-    if (!fs.existsSync(filterSetFolder)) {
-      fs.mkdirSync(filterSetFolder);
-    }
-    let fileName = defaultFilterSetFile;
-    let filePath = filterSetFolder + '\\' + fileName;
-    return filePath;
-  }
 
 function LoadFilterSetFileImpl(params:ILoadFilterSetFile):IFilterSetFolder[]{
-    let filePath = getDefaultFilterSetFilePath();
+    let filePath = params.fileName;
     if (!fs.existsSync(filePath)) {
       return defaultFilterSetFolder;
     }
@@ -162,15 +160,18 @@ async function GetLogRowsImpl(params: IGetLogRows) {
 
 async function SaveFolderImpl(params:ISaveFolder){
     let fsetFolder:IFilterSetFolder = params.folder;
-    let filterSetFileData = LoadFilterSetFileImpl({method:'LoadFilterSetFile'});
+    let filterSetFileData = LoadFilterSetFileImpl({method:'LoadFilterSetFile',fileName:params.fileName});
     let itemIndex = filterSetFileData.findIndex(itm => itm.name === fsetFolder.name);
     if (itemIndex === -1) {
       filterSetFileData.push(fsetFolder);
-    } else {
+    } else { 
       filterSetFileData[itemIndex] = fsetFolder;
     }
     let updatedFileJson = JSON.stringify(filterSetFileData);
-    let filePath = getDefaultFilterSetFilePath();
-  
-    fs.writeFileSync(filePath, updatedFileJson,{flag:'w'});    
+    let fpath = path.parse(params.fileName);
+    let fdir = fpath.dir;
+    if (!fs.existsSync(fdir)) {
+      fs.mkdirSync(fdir);
+    }    
+    fs.writeFileSync(params.fileName, updatedFileJson,{flag:'w'});    
 }

@@ -51,6 +51,7 @@ export interface IAppSession{
     TsFromFilter:number;
     TsToFilter:number;
     SeverityFilter:string[];
+    FilterSetFile:string;
     LastSelectedFolder:string;
     LastSelectedFilterSet:string;
 }
@@ -62,6 +63,7 @@ const AppSessionDataDefaultValues:IAppSession = {
     TsFromFilter:Date.now(),
     TsToFilter:Date.now(),
     SeverityFilter:[],
+    FilterSetFile:'D:\\LogExplorer\\defaultFilterSet.json',
     LastSelectedFolder:'default',
     LastSelectedFilterSet:'default'
 }

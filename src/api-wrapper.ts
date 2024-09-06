@@ -1,5 +1,6 @@
 import axios from "axios";
 import { IApiResponse, IFilterSetFolder,IFilterSet, ILogRow } from "./common-types";
+import { AppSessionData } from "./Components/AppData";
 
 export interface ICommonResult<TResult>{
     isOk:boolean;
@@ -17,14 +18,20 @@ export interface IGetLogRows{
 
 export interface ILoadFilterSetFile{
     method:'LoadFilterSetFile';
+    fileName:string;
 }
 
 export interface ISaveFolder{
     method:'SaveFolder';
+    fileName:string;
     folder:IFilterSetFolder;
 }
 
-export type TApiTwoWayCall = IGetLogRows|ILoadFilterSetFile|ISaveFolder;
+export interface ICurrDir{
+    method:'CurrDir';
+}
+
+export type TApiTwoWayCall = IGetLogRows|ILoadFilterSetFile|ISaveFolder|ICurrDir;
 
 
 async function MakeTwoWayCall(payload:TApiTwoWayCall){
@@ -37,16 +44,15 @@ class ApiWrapperClass{
         return result;
     } 
 
-    LoadFilterSetFile(fName:string=""):Promise<IFilterSetFolder[]>{
-        let result = MakeTwoWayCall({method:'LoadFilterSetFile'});
+    LoadFilterSetFile():Promise<IFilterSetFolder[]>{
+        let result = MakeTwoWayCall({method:'LoadFilterSetFile',fileName:AppSessionData.prop('FilterSetFile')});
         return result;        
     }
 
-    SaveFolder(fld:IFilterSetFolder):Promise<ICommonResult<void>>{
-        let result = MakeTwoWayCall({method:'SaveFolder',folder:fld});
+    SaveFolder(fld:IFilterSetFolder):Promise<ICommonResult<void>>{        
+        let result = MakeTwoWayCall({method:'SaveFolder',fileName:AppSessionData.prop('FilterSetFile'),folder:fld});
         return result;        
     }
-
 }
 
 export const ApiWrapper = new ApiWrapperClass();
