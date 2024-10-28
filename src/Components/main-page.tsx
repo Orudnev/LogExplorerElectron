@@ -10,6 +10,7 @@ import { AppGlobal } from '../app';
 import { AppSessionData } from './AppData';
 import { FilterPanel } from './filter-panel';
 import { FilterPanelTotals } from './filter-panel-totals';
+import { TestTree } from './test-tree';
 
 
 
@@ -85,6 +86,7 @@ export function MainPage() {
                     }} size='56' />
                 </div>
                 <div className='main-page-toolbar__secondline'>
+                    <TestTree />
                     {error ?
                         (
                             <div className='main-page-toolbar__error'>{error}</div>)
