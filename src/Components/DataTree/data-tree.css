@@ -74,3 +74,7 @@
 .icon-leaf-item-sel{
     content: var(--icon-leaf-item-sel);
 }
+.item-title-sel{
+    background-color: #ff000024;
+    border: solid 1px red;
+}
