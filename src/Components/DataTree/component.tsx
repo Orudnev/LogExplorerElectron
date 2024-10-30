@@ -183,7 +183,7 @@ export function DataTree<T>(props:IDataTreeProps<T>){
             <Tree treeId="tree-1" rootItem="root" />
         </UncontrolledTreeEnvironment>
         <div className='dtree_item-details'>
-            {GetDtItemEditor('test',selectedItem,
+            {GetDtItemEditor('filter',selectedItem,
             (item,newValue)=>{
               item.data = newValue;
               setRows({...rows});

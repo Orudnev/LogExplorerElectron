@@ -8,6 +8,8 @@ import { IFilterSet, IFilterSetFolder, ILogRow, IFilterPanel, IFilterPanelRow, I
 import { AppSessionData } from './AppData';
 import { FilterPanelTotals } from './filter-panel-totals';
 
+
+
 function FilterPanelRow(props: IFilterPanelRow) {
     const [value, setValue] = useState(props.rows[props.index]);
     useEffect(() => {

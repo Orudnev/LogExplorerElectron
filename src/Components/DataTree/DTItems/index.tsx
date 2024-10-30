@@ -1,10 +1,10 @@
 import { TreeItem } from "react-complex-tree";
 import { ITreeItemData } from "../../test-tree";
 import { IDataTreeProps } from "../component";
-import { DtTest } from "./dt-test";
+import { DtFilter } from "./dt-filter";
 import { ToolbarButton } from "../../toolbar-button";
 
-export type TEditorType = 'test'|'folder'|'leaf';
+export type TEditorType = 'filter'|'folder'|'leaf';
 
 export interface IEditorProps {
     treeItem: TreeItem<ITreeItemData>;
@@ -46,8 +46,8 @@ export function GetDtItemEditor<T>(dtItemType:TEditorType, genProps:T,
     } 
 
     switch (dtItemType){
-        case "test":
-            return (<DtTest {...props}/>);
+        case "filter":
+            return (<DtFilter {...props}/>);
         default:
             return (<></>); 
     }

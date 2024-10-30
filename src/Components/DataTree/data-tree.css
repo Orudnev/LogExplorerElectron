@@ -78,3 +78,19 @@
     background-color: #ff000024;
     border: solid 1px red;
 }
+
+/*  ----------------- editors ----------------- */
+
+.dt-editor .MuiFormControl-root{
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
+.dt-editor #operator{
+    min-width: 130px;
+    width: 130px;
+}
+
+.dt-editor #value{
+    min-width: 600px;
+}

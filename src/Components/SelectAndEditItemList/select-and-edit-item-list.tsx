@@ -13,6 +13,7 @@ interface ISelectFromList {
     selectedItem: string;
     caption: string;
     onChange: (selItem: string) => void;
+    id?:string;
 }
 
 
@@ -20,7 +21,7 @@ interface ISelectFromList {
           <em>None</em>
         </MenuItem> */}
 
-function SelectFromList(props: ISelectFromList) {
+export function SelectFromList(props: ISelectFromList) {
     const [selectedItem, setSelectedItem] = React.useState(props.selectedItem);
     const items: any[] = [];
     items.push(<MenuItem value=""><em>Очистить</em></MenuItem>);
@@ -32,7 +33,7 @@ function SelectFromList(props: ISelectFromList) {
         setSelectedItem(props.selectedItem) 
     }, [props.itemList,props.selectedItem]);
     return (
-        <FormControl sx={{ m: 1, minWidth: 250 }} size="small">
+        <FormControl id={props.id} fullWidth={false}  sx={{ m: 1, minWidth: 250 }} size="small">
             <InputLabel id="demo-select-small-label">{props.caption}</InputLabel>
             <Select
                 labelId="demo-select-small-label"

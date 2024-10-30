@@ -19,7 +19,21 @@ function newTreeNode<T>(newId:TreeItemIndex,childrenIds:any=undefined,data?:T,ca
   return result;
 }
 
-export type TFilterOperation = 'Contains'|'NotContain'|'Regexp';
+const FILTER_OPERATIONS = {
+  Contains:'',
+  NotContain:'',
+  Regex:''
+};
+
+export type TFilterOperation = keyof typeof FILTER_OPERATIONS;
+
+export function GetAllFilterOperations():string[]{
+  let result = [];
+  for(const opr in FILTER_OPERATIONS){
+    result.push(opr);
+  }
+  return result;
+}
 
 export interface ITreeItemData {
   operation:TFilterOperation;
