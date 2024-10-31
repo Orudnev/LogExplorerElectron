@@ -1,10 +1,12 @@
+import { ITreeItemSimple } from "./Components/DataTree/component";
+
 export interface IFilterPanelRowValue {
     searchCriteria:string;
     mustSkip:boolean;
   }
   
   export interface IFilterPanel {
-    fltRows: IFilterPanelRowValue[];
+    filterTree?:ITreeItemSimple<ITreeItemData>[];
     dataRows: ILogRow[];
     onChange: (frows: IFilterPanelRowValue[], isFilterOn: boolean, showSelItemsOnly:boolean, grpFilter: number) => void;
   }
@@ -54,11 +56,33 @@ export interface IFilterPanelRowValue {
   export interface IFilterSet{
     name:string;
     description:string;
-    filterRows:IFilterPanelRowValue[];
+    filterTree:ITreeItemSimple<ITreeItemData>[];
   }
   
   export interface IFilterSetFolder{
     name:string;
     description:string;
     filterSetList:IFilterSet[];
+  }
+
+  const FILTER_OPERATIONS = {
+    Contains:'',
+    NotContain:'',
+    Regex:''
+  };
+  
+  export type TFilterOperation = keyof typeof FILTER_OPERATIONS;
+  
+  export function GetAllFilterOperations():string[]{
+    let result = [];
+    for(const opr in FILTER_OPERATIONS){
+      result.push(opr);
+    }
+    return result;
+  }
+
+  export interface ITreeItemData {
+    operation:TFilterOperation;
+    label?:string,
+    value:string;
   }

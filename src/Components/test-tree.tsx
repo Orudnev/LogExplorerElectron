@@ -2,6 +2,7 @@ import { useMemo,useState,useEffect } from 'react';
 import { UncontrolledTreeEnvironment,ControlledTreeEnvironment, Tree, StaticTreeDataProvider, TreeItemIndex,TreeItem } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
 import { DataTree } from './DataTree/component';
+import { ITreeItemData } from '../common-types';
 
 
 function newTreeNode<T>(newId:TreeItemIndex,childrenIds:any=undefined,data?:T,canMovep=true,canRename=true):TreeItem<T>{
@@ -19,27 +20,6 @@ function newTreeNode<T>(newId:TreeItemIndex,childrenIds:any=undefined,data?:T,ca
   return result;
 }
 
-const FILTER_OPERATIONS = {
-  Contains:'',
-  NotContain:'',
-  Regex:''
-};
-
-export type TFilterOperation = keyof typeof FILTER_OPERATIONS;
-
-export function GetAllFilterOperations():string[]{
-  let result = [];
-  for(const opr in FILTER_OPERATIONS){
-    result.push(opr);
-  }
-  return result;
-}
-
-export interface ITreeItemData {
-  operation:TFilterOperation;
-  label?:string,
-  value:string;
-}
 
 const treeDataOld:TreeItem<ITreeItemData>[] = [
   newTreeNode("root",[1,2,3]),
@@ -55,87 +35,12 @@ const longTreeJsonStr = '{"items":{"root":{"index":"root","canMove":true,"isFold
 
 const longTree = JSON.parse(longTreeJsonStr);
 
-export function TestTree(){
-  return (
-    <DataTree items={treeDataOld} />
-  );
-}
-
 // export function TestTree(){
-//       const items = useMemo(()=>{
-//         let result:any = {};
-//         for(let i=0;i<treeDataOld.length;i++){
-//           let itm = treeDataOld[i];
-//           result[itm.index] = itm;  
-//         }
-//         return result; 
-//       },[]);
-//       const dataProvider = useMemo(
-//         () =>
-//           new StaticTreeDataProvider(items, (item, data) => ({            
-//             ...item,
-//             data,
-//           })),
-//         [items]
-//       );  
-//       const [selItemIdx,setSelItemIdx] = useState("");
-//       return (
-//         <UncontrolledTreeEnvironment       
-//             canDragAndDrop
-//             canDropOnFolder
-//             canReorderItems
-//             dataProvider={dataProvider}
-//             getItemTitle={item => item.index.toString()}
-//             viewState={{
-//               'tree-1': {
-//                 expandedItems: [],
-//               },
-//             }}      
-//             renderItemTitle={({ title,item,context }) =>{
-//               if(item.index === selItemIdx){
-//                 return <span style = {{border:"solid 1px red",backgroundColor:"#ffc8b8"} }>{title}</span>;
-//               }
-//               return <span>{title}</span>;              
-//             }}
-//             renderItemArrow={({ item, context }) =>{
-//             if(item.isFolder){
-//               if(context.isExpanded){
-//                 return <span {...context.arrowProps}> {folderOpened} </span>; 
-//               } 
-//               return <span {...context.arrowProps}> {folderClosed} </span>; 
-//             }  
-//             return <span {...context.arrowProps}> {leafItem} </span>; 
-//             }
-//            } 
-//             onFocusItem={(item,treeId,setDomFocus)=>{
-//               setSelItemIdx(item.index.toString());
-//             }}           
-//             renderItem={({ title, arrow, depth, context, children }) => {
-//               return (
-//                 <li
-//                   {...context.itemContainerWithChildrenProps}
-//                   style={{
-//                     margin: 0,
-//                     display: 'flex',
-//                     flexDirection: 'column',
-//                     alignItems: 'flex-start',
-//                   }}
-//                 >
-//                   <div className='renderItem' {...context.itemContainerWithoutChildrenProps} {...context.interactiveElementProps}>
-//                     {arrow}
-//                     {title}
-//                   </div>
-//                   {children}
-//                 </li>
-//               );              
-//             }}
-//             renderTreeContainer={({ children, containerProps }) => <div className='renderTreeCont' {...containerProps}>{children}</div>}
-//             renderItemsContainer={({ children, containerProps }) => <ul className='renderItmCont' {...containerProps}>{children}</ul>}
-//         >
-//             <Tree treeId="tree-1" rootItem="root" treeLabel="Tree Example"  />
-//         </UncontrolledTreeEnvironment>
-//       );
+//   return (
+//     <DataTree  />
+//   );
 // }
+
 
 const rightArrowB64 = 'PHN2ZyB2aWV3Qm94PSIwIDAgNTAwIDY3MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpieD0iaHR0cHM6Ly9ib3h5LXN2Zy5jb20iPgogIDxwYXRoIGQ9Ik0gMzYzLjg2NSAzODguNTQzIEwgNTU1LjQ0OCA3NTYuMDgyIEwgMTY0LjQ2MyA3NTYuMDgyIEwgMzYzLjg2NSAzODguNTQzIFoiIHN0eWxlPSJzdHJva2U6IHJnYigwLCAwLCAwKTsgZmlsbDogcmdiKDM0LCA0MCwgNDkpOyB0cmFuc2Zvcm0tb3JpZ2luOiAzNTkuOTU1cHggNTcyLjMxM3B4OyIgdHJhbnNmb3JtPSJtYXRyaXgoMCwgMSwgLTEsIDAsIC05Mi44NTE1NjI1LCAtMjUwLjEyMzEzODQyNzczNCkiIGJ4OnNoYXBlPSJ0cmlhbmdsZSAxNjQuNDYzIDM4OC41NDMgMzkwLjk4NSAzNjcuNTM5IDAuNTEgMCAxQDk2NmJjMTM3Ii8+Cjwvc3ZnPg==';
 const dnArrowB64 = 'PHN2ZyB2aWV3Qm94PSIwIDAgNTAwIDY3MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpieD0iaHR0cHM6Ly9ib3h5LXN2Zy5jb20iPgogIDxwYXRoIGQ9Ik0gLTI1MC4xOTQgLTUwNS45NTkgTCAtNTguNjExIC0xMzguNDIgTCAtNDQ5LjU5NiAtMTM4LjQyIEwgLTI1MC4xOTQgLTUwNS45NTkgWiIgc3R5bGU9InN0cm9rZTogcmdiKDAsIDAsIDApOyBmaWxsOiByZ2IoMzQsIDQwLCA0OSk7IHRyYW5zZm9ybS1vcmlnaW46IC0yNTQuMTA0cHggLTMyMi4xOXB4OyIgdHJhbnNmb3JtPSJtYXRyaXgoLTEsIDAsIDAsIC0xLCA1MDguMjA2OTcwMjE0ODQsIDY0NC4zNzkwMjgzMjAzMTMpIiBieDpzaGFwZT0idHJpYW5nbGUgLTQ0OS41OTYgLTUwNS45NTkgMzkwLjk4NSAzNjcuNTM5IDAuNTEgMCAxQDhlMzMxYTY3Ii8+Cjwvc3ZnPg==';
@@ -148,36 +53,3 @@ const folderOpened = <img src={'data:image/svg+xml;base64,'+folderOpenedB64} sty
 const dnArrow    = <img src={'data:image/svg+xml;base64,'+dnArrowB64} style={{height:'16px', marginRight:'5px'}} />;
 const leafItem   = <img src={'data:image/svg+xml;base64,'+blankList} style={{height:'16px', marginRight:'5px'}} />;
 
-// export function TestTree(){
-//   const [treeItems,setTreeItems] = useState<any>(longTree.items);
-//   const [focusedItem, setFocusedItem] = useState<TreeItemIndex>();
-//   const [expandedItems, setExpandedItems] = useState<any>([]);
-//   const [selectedItems, setSelectedItems] = useState<any>([]);
-
-//   return (
-//     <ControlledTreeEnvironment
-//       items={treeItems}
-//       getItemTitle={item => item.data}
-//       viewState={{
-//         ['tree-2']: {
-//           focusedItem,
-//           expandedItems,
-//           selectedItems,
-//         },
-//       }}
-//       onFocusItem={item => setFocusedItem(item.index)}
-//       onExpandItem={item => setExpandedItems([...expandedItems, item.index])}
-//       onCollapseItem={item =>
-//         setExpandedItems(expandedItems.filter((expandedItemIndex:any) => expandedItemIndex !== item.index))
-//       }
-//       onSelectItems={items => setSelectedItems(items)}
-      
-//       canDragAndDrop={true}
-//       canReorderItems={true}
-//       canDropOnFolder={true}
-    
-//     >
-//       <Tree treeId="tree-2" rootItem="root" treeLabel="Tree Example" />
-//     </ControlledTreeEnvironment>
-//   );
-// }

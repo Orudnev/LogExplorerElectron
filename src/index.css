@@ -124,7 +124,7 @@
   border-radius: 4px !important;
 }
 
-.filter-row-list-container {
+.filter-panel {
   display: inline-flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -133,7 +133,7 @@
   margin-top: 10px;
 }
 
-.filter-row-list-container .border-label-font {
+.filter-panel .border-label-font {
   position: relative;
   top: -9px;
   left: 10px;

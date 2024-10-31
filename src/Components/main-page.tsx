@@ -9,8 +9,6 @@ import { ILogRow, LogRowResult,IFilterPanelRowValue } from '../common-types';
 import { AppGlobal } from '../app';
 import { AppSessionData } from './AppData';
 import { FilterPanel } from './filter-panel';
-import { FilterPanelTotals } from './filter-panel-totals';
-import { TestTree } from './test-tree';
 
 
 
@@ -27,7 +25,7 @@ export function MainPage() {
     const [severityFltValue, setSeverityFltValue] = useState(AppSessionData.prop('SeverityFilter'));
     const [error, setError] = useState("");
     const datagrid = useGridApiRef();
-    if (isLoading) {
+    if (isLoading) { 
         return (<div>'Loading...'</div>);
     }
     const columns: GridColDef[] = [
@@ -86,13 +84,12 @@ export function MainPage() {
                     }} size='56' />
                 </div>
                 <div className='main-page-toolbar__secondline'>
-                    <TestTree />
                     {error ?
                         (
                             <div className='main-page-toolbar__error'>{error}</div>)
                         : (
                             <div className='filter-panel-wrapper'>
-                                <FilterPanel fltRows={[{searchCriteria:"",mustSkip:false}]} dataRows={rowList}
+                                <FilterPanel  dataRows={rowList}
                                     onChange={(frows:any, isFilterOn:any, showSelItemsOnly:any, grpFilter:any) => {
                                         let newRows = ApplyFilter(allRowList, frows, isFilterOn, showSelItemsOnly,  grpFilter);
                                         let cr = currRow;

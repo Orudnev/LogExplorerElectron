@@ -1,8 +1,7 @@
 import { TreeItem } from "react-complex-tree";
-import { ITreeItemData } from "../../test-tree";
-import { IDataTreeProps } from "../component";
 import { DtFilter } from "./dt-filter";
 import { ToolbarButton } from "../../toolbar-button";
+import { ITreeItemData } from "../../../common-types";
 
 export type TEditorType = 'filter'|'folder'|'leaf';
 
