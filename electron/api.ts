@@ -33,7 +33,7 @@ const defaultFilterSetFolder: IFilterSetFolder[] = [
     { 
         name: 'Default', 
         description: '', 
-        filterSetList: [{ name: "TestFilterSet", description: "", filterRows: [{searchCriteria:"",mustSkip:false}]}] 
+        filterSetList: [{ name: "TestFilterSet", description: "", filterTree: []}] 
     } 
 ];
 
@@ -117,7 +117,7 @@ async function GetLogRowsImpl(params: IGetLogRows) {
         clearTime(dfrom);
         clearTime(dto);
         logFiles = allFiles.filter(fname => {
-            let re = /(debug|info|error).log.(\d\d\d\d)(\d\d)(\d\d)/;
+            let re = /(debug|Debug|info|error).log.(\d\d\d\d)(\d\d)(\d\d)/;
             let m = fname.match(re);
             if (m?.length !== 5) {
                 return false;

@@ -5,10 +5,11 @@ import dayjs, { Dayjs } from 'dayjs';
 import { ApiWrapper } from '../api-wrapper';
 import { MultiSelect, Option } from './multi-select';
 import { ToolbarButton, ToolbarCheckButton } from './toolbar-button';
-import { ILogRow, LogRowResult,IFilterPanelRowValue } from '../common-types';
+import { ILogRow, LogRowResult} from '../common-types';
 import { AppGlobal } from '../app';
 import { AppSessionData } from './AppData';
 import { FilterPanel } from './filter-panel';
+import { IFilterPanelRowValue } from '../gui-common-types';
 
 
 

@@ -1,6 +1,7 @@
 import axios from "axios";
-import { IApiResponse, IFilterSetFolder,IFilterSet, ILogRow } from "./common-types";
 import { AppSessionData } from "./Components/AppData";
+import { IFilterSetFolder } from "./common-types";
+import { ILogRow } from "./common-types";
 
 export interface ICommonResult<TResult>{
     isOk:boolean;

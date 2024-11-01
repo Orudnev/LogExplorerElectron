@@ -4,9 +4,10 @@ import { SelectAndEditItemList } from './SelectAndEditItemList/select-and-edit-i
 import { ToolbarButton, ToolbarCheckButton } from './toolbar-button';
 //import * as Api from '../api-wrapper';
 import { ApiWrapper } from '../api-wrapper';
-import { IFilterSet, IFilterSetFolder, ILogRow, IFilterPanel, IFilterPanelRow, IFilterPanelRowValue } from '../common-types';
+import { IFilterPanel, IFilterPanelRow,TFilterSet  } from '../gui-common-types';
 import { AppSessionData } from './AppData';
 import { DataTree, IDataTreeAPI, emptyTreeData } from './DataTree/component';
+import { IFilterSetFolder } from '../common-types';
 
 
 
@@ -185,7 +186,7 @@ export function FilterPanel(props: IFilterPanel) {
                         }
                     }}
                     onAdd={(item) => {
-                        let newItem: IFilterSet = {
+                        let newItem: TFilterSet = {
                             name: item,
                             description: '',
                             filterTree: emptyTreeData

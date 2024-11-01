@@ -3,7 +3,7 @@ import { TreeItem } from 'react-complex-tree';
 import { IEditorProps } from '.';
 import TextField from '@mui/material/TextField';
 import { SelectFromList } from '../../SelectAndEditItemList/select-and-edit-item-list';
-import { GetAllFilterOperations,ITreeItemData, TFilterOperation } from '../../../common-types';
+import { GetAllFilterOperations,ITreeItemData, TFilterOperation } from '../../../gui-common-types';
 
 
 export function DtFilter(props:IEditorProps){

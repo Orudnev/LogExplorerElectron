@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { IFilterSet, IFilterSetFolder, ILogRow } from "../src/common-types";
+import { IFilterSetFolder, ILogRow } from "../src/common-types";
 const readline = require('readline');
 
 export function loadLogFile(filePath: string): ILogRow[] {
@@ -135,7 +135,7 @@ export async function processLineByLine(filePath: string, startRowIndex: number)
 }
 
 const defaultFilterSetFolder: IFilterSetFolder[] = [
-  { name: 'Default', description: '', filterSetList: [{ name: "TestFilterSet", description: "", filterRows: [] }] }
+  { name: 'Default', description: '', filterSetList: [{ name: "TestFilterSet", description: "", filterTree: [] }] }
 ];
 
 

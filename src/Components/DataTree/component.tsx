@@ -3,15 +3,9 @@ import { UncontrolledTreeEnvironment,ControlledTreeEnvironment, Tree, StaticTree
 import 'react-complex-tree/lib/style-modern.css';
 import './data-tree.css';
 import { GetDtItemEditor, GetDtItemToolbar } from './DTItems';
-import { ITreeItemData } from '../../common-types';
+import { ITreeItemData } from '../../gui-common-types';
+import { ITreeItemSimple } from '../../common-types';
 
-
-export interface ITreeItemSimple<T>{
-  index:TreeItemIndex;
-  isFolder?:boolean
-  children?:Array<TreeItemIndex>;
-  data?:T;
-}
 
 export const emptyTreeData:ITreeItemSimple<ITreeItemData>[] = [
   {index:'root',isFolder:true,children:[1,2]},
@@ -75,7 +69,7 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
       [rows]
   );  
   const [selItemIdx,setSelItemIdx] = useState(0);
-  const selectedItem:TreeItem<ITreeItemData> = rows[selItemIdx];
+  const selectedItem:TreeItem<any> = rows[selItemIdx];
   const allowDelete = selectedItem && !selectedItem.isFolder && rows['root'].children.length>1;
   return (
     <div ref={props.ref} className='dtree'>
@@ -85,7 +79,7 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
               let lastIndex = -1;
               //Определяем максимальный индекс (для того, чтобы сгенерировать следующий)
               for(const key in rows){
-                 let row = rows[key] as TreeItem<ITreeItemData>;
+                 let row = rows[key] as TreeItem<any>;
                  if(isNaN(row.index as any)){
                     continue;
                  }
@@ -101,7 +95,7 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
                 label:'New element',
                 value:''
               } 
-              let newRow:TreeItem<ITreeItemData> = {
+              let newRow:TreeItem<any> = {
                 index:lastIndex,
                 isFolder:false,
                 data:emptyData,
@@ -125,11 +119,11 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
             const nr:any = {};
             let newSelectedIndex = -1;
             for(const key in rows){
-              let row:TreeItem<ITreeItemData> = rows[key];
+              let row:TreeItem<any> = rows[key];
               if(row.children){
                 let delIndex = row.children.findIndex(itm=>itm == selectedItem.index);
                 if(delIndex>-1){
-                  let parent:TreeItem<ITreeItemData> = row;
+                  let parent:TreeItem<any> = row;
                   if(parent.children){
                     parent.children.splice(delIndex,1);
                     if(parent.children.length>0){

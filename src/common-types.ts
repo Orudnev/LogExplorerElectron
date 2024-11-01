@@ -1,88 +1,54 @@
-import { ITreeItemSimple } from "./Components/DataTree/component";
+export enum LogRowResult {
+  undefined = 0,
+  highlighted = 1,
+  backgr1 = 2,
+  backgr2 = 4,
+  isNewFltGroupStart = 8, //Строка содержит в себе значение указанное в первой строке набора фильтров
+  errMissingRowsInFltGroup = 16,
+  errWrongOrder = 32,
+  groupIsCorrect = 64,
+  groupIsWrong = 128,
+  selectedByUser = 256
+}
 
-export interface IFilterPanelRowValue {
-    searchCriteria:string;
-    mustSkip:boolean;
-  }
-  
-  export interface IFilterPanel {
-    filterTree?:ITreeItemSimple<ITreeItemData>[];
-    dataRows: ILogRow[];
-    onChange: (frows: IFilterPanelRowValue[], isFilterOn: boolean, showSelItemsOnly:boolean, grpFilter: number) => void;
-  }
-  
-  
-  export interface IFilterPanelRow {
-    rows: IFilterPanelRowValue[];
-    index: number;
-    onChangedValue: (index: number, newValue: IFilterPanelRowValue) => void;
-    onDeleteRowBtnClick: (index: number) => void;
-    onAddRowBtnClick: () => void;
-    onMoveRowUp:(index:number) => void;
-    onMoveRowDown:(index:number) => void;
-  }
-  
-  
-  export enum LogRowResult {
-    undefined = 0,
-    highlighted = 1,
-    backgr1 = 2,
-    backgr2 = 4,
-    isNewFltGroupStart = 8, //Строка содержит в себе значение указанное в первой строке набора фильтров
-    errMissingRowsInFltGroup = 16,
-    errWrongOrder = 32,
-    groupIsCorrect = 64,
-    groupIsWrong = 128,
-    selectedByUser = 256
-  }
-  
-  export interface ILogRow {
-    id: number;
-    RowLineNumber: number;
-    Severity: string;
-    Date: Date | undefined;
-    ThreadId: number | undefined;
-    Comment: string;
-    SelectedMark?: number;
-    Result?: LogRowResult;
-    ResultMessage?:string;
-  }
-  
-  export interface IApiResponse{
-    response:any;
-    error:any;
-  }
-  
-  export interface IFilterSet{
-    name:string;
-    description:string;
-    filterTree:ITreeItemSimple<ITreeItemData>[];
-  }
-  
-  export interface IFilterSetFolder{
-    name:string;
-    description:string;
-    filterSetList:IFilterSet[];
-  }
+export interface ILogRow {
+  id: number;
+  RowLineNumber: number;
+  Severity: string;
+  Date: Date | undefined;
+  ThreadId: number | undefined;
+  Comment: string;
+  SelectedMark?: number;
+  Result?: LogRowResult;
+  ResultMessage?: string;
+}
 
-  const FILTER_OPERATIONS = {
-    Contains:'',
-    NotContain:'',
-    Regex:''
-  };
-  
-  export type TFilterOperation = keyof typeof FILTER_OPERATIONS;
-  
-  export function GetAllFilterOperations():string[]{
-    let result = [];
-    for(const opr in FILTER_OPERATIONS){
-      result.push(opr);
-    }
-    return result;
-  }
+export interface IApiResponse {
+  response: any;
+  error: any;
+}
 
-  export interface ITreeItemData {
-    operation:TFilterOperation;
-    label?:string,
-    value:string;
-  }
+type TTreeItemIndex = string | number
+
+export interface ITreeItemSimple<T>{
+  index:TTreeItemIndex;
+  isFolder?:boolean
+  children?:Array<TTreeItemIndex>;
+  data?:T;
+}
+
+export interface IFilterSetBase<T>{
+  name:string;
+  description:string;
+  filterTree:ITreeItemSimple<T>[];
+}
+
+export interface IFilterSetFolder {
+  name: string;
+  description: string;
+  filterSetList: IFilterSetBase<any>[];
+}
+
+
+
+

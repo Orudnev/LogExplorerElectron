@@ -2,7 +2,7 @@ import { useMemo,useState,useEffect } from 'react';
 import { UncontrolledTreeEnvironment,ControlledTreeEnvironment, Tree, StaticTreeDataProvider, TreeItemIndex,TreeItem } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
 import { DataTree } from './DataTree/component';
-import { ITreeItemData } from '../common-types';
+import { ITreeItemData } from '../gui-common-types';
 
 
 function newTreeNode<T>(newId:TreeItemIndex,childrenIds:any=undefined,data?:T,canMovep=true,canRename=true):TreeItem<T>{
