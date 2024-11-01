@@ -191,7 +191,7 @@ async function GetActionsImpl(params:IGetActions){
         try{
             const data = fs.readFileSync(filePath,'utf-8');
             const newItem:ILogRowAction = {
-                name:fname,
+                name:path.parse(fname).name,
                 jsSourceCode:data
             };
             response.result?.push(newItem);
