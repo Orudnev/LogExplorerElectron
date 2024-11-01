@@ -70,7 +70,13 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
   );  
   const [selItemIdx,setSelItemIdx] = useState(0);
   const selectedItem:TreeItem<any> = rows[selItemIdx];
-  const allowDelete = selectedItem && !selectedItem.isFolder && rows['root'].children.length>1;
+  //осталось 2 элемента (1 элемент не выбирается сразу после рендера(баг компонента) , поэтому его не отображаем)
+   //поэтому не удаляем второй элемент
+
+  const allowDelete = selectedItem && !selectedItem.isFolder && rows['root'].children.length>2; // если у рута осталось только 2 вложенных элемента
+  // то удалять нельзя т.к. первый элемент не используется из за бага 
+  // в компоненте react-complex-tree - 1 вложенный элемент рута не выбирается пока не выберешь какой то другой элемент
+  // поэтому второй чайлд удалять нельзя
   return (
     <div ref={props.ref} className='dtree'>
       {GetDtItemToolbar(selectedItem,allowDelete,(cmd)=>{
@@ -125,6 +131,11 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
                 if(delIndex>-1){
                   let parent:TreeItem<any> = row;
                   if(parent.children){
+                    if(parent.index === 'root' && parent.children.length < 3){
+                      //осталось 2 элемента (1 элемент не выбирается сразу после рендера(баг компонента) , поэтому его не отображаем)
+                      //поэтому не удаляем второй элемент
+                      return;
+                    }
                     parent.children.splice(delIndex,1);
                     if(parent.children.length>0){
                       if(parent.children.length>delIndex){
@@ -202,7 +213,10 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
           onFocusItem={(item,treeId,setDomFocus)=>{
             setSelItemIdx(item.index as number);
           }}           
-          renderItem={({ title, arrow, depth, context, children }) => {
+          renderItem={({ item, title, arrow, depth, context, children }) => {
+            if(item.index == 1){
+              return (<></>);
+            }
             return (
               <li 
                 {...context.itemContainerWithChildrenProps}
