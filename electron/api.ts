@@ -2,8 +2,8 @@ import { BrowserWindow, app } from 'electron';
 import * as fs  from 'fs';
 import * as path from 'path';
 import {deleteFilterSetFolder, processLineByLine, readFilterSetFile, updateFilterSetFolder,updateFilterSetFolderAsync} from './files-helper';
-import { ICommonResult, TApiTwoWayCall, IGetLogRows, ILoadFilterSetFile, ISaveFolder } from '../src/api-wrapper';
-import { IFilterSetFolder, ILogRow } from '../src/common-types';
+import { ICommonResult, TApiTwoWayCall, IGetLogRows, ILoadFilterSetFile, ISaveFolder, IGetActions } from '../src/api-wrapper';
+import { IFilterSetFolder, ILogRow, ILogRowAction } from '../src/common-types';
 
 
 export async function HandleTwoWayCall(event: any, payload: TApiTwoWayCall) {
@@ -21,6 +21,8 @@ export async function HandleTwoWayCall(event: any, payload: TApiTwoWayCall) {
             return SaveFolderImpl(payload);
         case 'CurrDir':
             return CurrDirImpl(payload);
+        case 'GetActions':
+            return GetActionsImpl(payload)
     }
 }
 
@@ -174,4 +176,29 @@ async function SaveFolderImpl(params:ISaveFolder){
       fs.mkdirSync(fdir);
     }    
     fs.writeFileSync(params.fileName, updatedFileJson,{flag:'w'});    
+}
+
+async function GetActionsImpl(params:IGetActions){
+    let response: ICommonResult<ILogRowAction[]> = {
+        isOk: true,
+        result: [],
+        error: ""
+    }
+    let allFiles = fs.readdirSync(params.folderPath).map(fileName => { return fileName }); 
+    allFiles.forEach(jsFileName=>{
+        let fname = jsFileName;
+        let filePath = path.join(params.folderPath, fname);  
+        try{
+            const data = fs.readFileSync(filePath,'utf-8');
+            const newItem:ILogRowAction = {
+                name:fname,
+                jsSourceCode:data
+            };
+            response.result?.push(newItem);
+        } catch(error){
+            response.isOk = false;
+            response.error = JSON.stringify(error);
+        }
+    })
+    return response;
 }

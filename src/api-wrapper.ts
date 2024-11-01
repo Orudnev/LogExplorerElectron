@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AppSessionData } from "./Components/AppData";
-import { IFilterSetFolder } from "./common-types";
+import { IFilterSetFolder, ILogRowAction } from "./common-types";
 import { ILogRow } from "./common-types";
 
 export interface ICommonResult<TResult>{
@@ -32,7 +32,13 @@ export interface ICurrDir{
     method:'CurrDir';
 }
 
-export type TApiTwoWayCall = IGetLogRows|ILoadFilterSetFile|ISaveFolder|ICurrDir;
+export interface IGetActions{
+    method:'GetActions',
+    folderPath:string
+}
+
+
+export type TApiTwoWayCall = IGetLogRows|ILoadFilterSetFile|ISaveFolder|ICurrDir|IGetActions;
 
 
 async function MakeTwoWayCall(payload:TApiTwoWayCall){
@@ -53,6 +59,28 @@ class ApiWrapperClass{
     SaveFolder(fld:IFilterSetFolder):Promise<ICommonResult<void>>{        
         let result = MakeTwoWayCall({method:'SaveFolder',fileName:AppSessionData.prop('FilterSetFile'),folder:fld});
         return result;        
+    }
+    GetActions(folder:string):Promise<ICommonResult<ILogRowAction[]>>{
+        let fltSetFile = AppSessionData.prop('FilterSetFile');
+        let folderPath = getPath(fltSetFile)+"\\"+folder;
+        if(!folderPath){
+            return new Promise<ICommonResult<ILogRowAction[]>>(function(resolve,reject){
+                let result:ICommonResult<ILogRowAction[]> = {
+                    isOk:false,
+                    error:"FilterSet file is not defined or wrong"
+                }
+                return result;    
+            });
+        }
+        let result = MakeTwoWayCall({method:'GetActions',folderPath:folderPath});
+        return result;
+    }
+}
+
+function getPath(pathAndFileName:string){
+    let m = pathAndFileName.match(/(\S+)[\\/]+S*/);
+    if(m){
+        return m[1];
     }
 }
 

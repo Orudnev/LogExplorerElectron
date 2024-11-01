@@ -79,13 +79,13 @@ function FilterPanelRow(props: IFilterPanelRow) {
 
 export function FilterPanel(props: IFilterPanel) {
     const [filterTree, setFilterTree] = useState(props.filterTree);
-    const [isFilterOn, setIsFilterOn] = useState(false);
     const [showSelItems, setShowSelItems] = useState(false);
     const [filterFileContent, setFilterFileContent] = useState<IFilterSetFolder[]>([]);
     const [selectedFolder, setSelectedFolder] = useState('');
     const [selectedFilterSet, setSelectedFilterSet] = useState('');
-    const [groupFilter, setGroupFilter] = useState(0);
+    const [logRowActions,setLogRowActions] = useState<any>(null);
     const dataTreeRef = useRef<IDataTreeAPI>(null);
+
     useEffect(() => {
         ApiWrapper.LoadFilterSetFile() 
             .then((flist) => {
@@ -141,6 +141,19 @@ export function FilterPanel(props: IFilterPanel) {
     } else {
         filterSetList = [];
     }
+
+    if(selectedFolder && !logRowActions){
+        ApiWrapper.GetActions(selectedFolder)
+        .then(response=>{
+            if(response.result){
+                setLogRowActions(response.result);
+            }
+        })
+        .catch(err=>{
+            let s = err;
+        });                            
+    }
+
     return (
         <div className='filter-panel'>
             <div className="border-label-font">Панель набора фильтров</div>
@@ -179,10 +192,10 @@ export function FilterPanel(props: IFilterPanel) {
                         if (fsetItem) {
                             AppSessionData.prop('LastSelectedFolder', selectedFolder);
                             AppSessionData.prop('LastSelectedFilterSet', selFset);
-                            setFilterTree(undefined);
+                            setFilterTree(undefined);  
                             setTimeout(() => {
                                 setFilterTree(fsetItem?.filterTree);                                
-                            }, 0);    
+                            }, 0);                             
                         }
                     }}
                     onAdd={(item) => {

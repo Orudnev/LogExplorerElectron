@@ -49,6 +49,10 @@ export interface IFilterSetFolder {
   filterSetList: IFilterSetBase<any>[];
 }
 
+export interface ILogRowAction{
+  name:string;
+  jsSourceCode:string;
+}
 
 
 
