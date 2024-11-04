@@ -8,6 +8,7 @@ import { IFilterPanel, IFilterPanelRow,TFilterSet  } from '../gui-common-types';
 import { AppSessionData } from './AppData';
 import { DataTree, IDataTreeAPI, emptyTreeData } from './DataTree/component';
 import { IFilterSetFolder } from '../common-types';
+import { AppGlobal } from '../app';
 
 
 
@@ -83,9 +84,20 @@ export function FilterPanel(props: IFilterPanel) {
     const [filterFileContent, setFilterFileContent] = useState<IFilterSetFolder[]>([]);
     const [selectedFolder, setSelectedFolder] = useState('');
     const [selectedFilterSet, setSelectedFilterSet] = useState('');
-    const [logRowActions,setLogRowActions] = useState<any>(null);
     const dataTreeRef = useRef<IDataTreeAPI>(null);
-
+    const loadLogRowActions = (folderName:string)=>{
+        if(folderName){
+            ApiWrapper.GetActions(folderName)
+            .then(response=>{
+                if(response.result){
+                    AppGlobal.dispatch({type:'SetLogRowActions',actions:response.result})
+                }
+            })
+            .catch(err=>{
+                let s = err;
+            });                            
+        }        
+    };
     useEffect(() => {
         ApiWrapper.LoadFilterSetFile() 
             .then((flist) => {
@@ -95,11 +107,14 @@ export function FilterPanel(props: IFilterPanel) {
                         flist.find(itm => itm.name.toLocaleLowerCase() === AppSessionData.prop('LastSelectedFolder').toLocaleLowerCase());
                     if (storedFolder) {
                         setSelectedFolder(storedFolder.name);
+                        AppGlobal.dispatch({type:'SelectFilterSetFolder',folderName:storedFolder.name});
+                        loadLogRowActions(storedFolder.name);
                         let storedFset =
                             storedFolder.filterSetList
                                 .find(itm => itm.name.toLocaleLowerCase() === AppSessionData.prop('LastSelectedFilterSet').toLocaleLowerCase());
                         if (storedFset) {
                             setSelectedFilterSet(storedFset.name);
+                            AppGlobal.dispatch({type:'SelectFilterSetItem',itemName:storedFset.name});
                             setFilterTree(storedFset.filterTree);
                         }
                     }
@@ -142,18 +157,6 @@ export function FilterPanel(props: IFilterPanel) {
         filterSetList = [];
     }
 
-    if(selectedFolder && !logRowActions){
-        ApiWrapper.GetActions(selectedFolder)
-        .then(response=>{
-            if(response.result){
-                setLogRowActions(response.result);
-            }
-        })
-        .catch(err=>{
-            let s = err;
-        });                            
-    }
-
     return (
         <div className='filter-panel'>
             <div className="border-label-font">Панель набора фильтров</div>
@@ -163,6 +166,8 @@ export function FilterPanel(props: IFilterPanel) {
                     caption='Выбор папки'
                     selectedItem={selectedFolder} onSelected={(selFolder) => {
                         setSelectedFolder(selFolder);
+                        AppGlobal.dispatch({type:'SelectFilterSetFolder',folderName:selFolder});
+                        loadLogRowActions(selFolder);
                         if (!selFolder) {
                             setSelectedFilterSet('');
                         }
@@ -175,11 +180,14 @@ export function FilterPanel(props: IFilterPanel) {
                         };
                         filterFileContent.push(newItem);
                         setSelectedFolder(item);
+                        AppGlobal.dispatch({type:'SelectFilterSetFolder',folderName:item});
+                        loadLogRowActions(item);
                     }}
                     onDelete={(item) => {
                         let newFilterFileContent = filterFileContent.filter(itm => itm.name.toLowerCase() !== item);
                         setFilterFileContent(newFilterFileContent);
                         setSelectedFolder("");
+                        AppGlobal.dispatch({type:'SelectFilterSetFolder',folderName:""});
                     }}
                 />
                 <SelectAndEditItemList
@@ -188,6 +196,7 @@ export function FilterPanel(props: IFilterPanel) {
                     selectedItem={selectedFilterSet}
                     onSelected={(selFset) => {
                         setSelectedFilterSet(selFset);
+                        AppGlobal.dispatch({type:'SelectFilterSetItem',itemName:selFset});
                         let fsetItem = getFilterSet(selFset)
                         if (fsetItem) {
                             AppSessionData.prop('LastSelectedFolder', selectedFolder);
@@ -208,6 +217,7 @@ export function FilterPanel(props: IFilterPanel) {
                         if (folderItem) {
                             folderItem.filterSetList.push(newItem);
                             setSelectedFilterSet(item);
+                            AppGlobal.dispatch({type:'SelectFilterSetItem',itemName:item});
                         }
                     }}
                     onDelete={(item) => {

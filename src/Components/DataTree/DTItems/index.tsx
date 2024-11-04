@@ -7,7 +7,6 @@ export type TEditorType = 'filter'|'folder'|'leaf';
 
 export interface IEditorProps {
     treeItem: TreeItem<ITreeItemData>;
-    onIndexChanged?: (item:TreeItem<ITreeItemData>,newValue:number)=>void;
     onValueChanged?: (item:TreeItem<ITreeItemData>,newValue:ITreeItemData)=>void;
 }  
 

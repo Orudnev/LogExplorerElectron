@@ -1,27 +1,52 @@
 import { Reducer } from 'redux';
+import { ILogRowAction } from '../common-types';
 
 
 export interface IAppSettings {
-    testSetting: string;
+    filterSetFolderName: string;
+    filterSetItemName:string;
+    logRowActions:ILogRowAction[];
 }
 export const initAppSettings: IAppSettings = {
-    testSetting:"blablabla"
+    filterSetFolderName:"",
+    filterSetItemName:"",
+    logRowActions:[]
 };
 
-export interface ITestAction{
-    type:"TestAction",
-    testSetting:string
+export interface ISelectFilterSetFolder{
+    type:"SelectFilterSetFolder",
+    folderName:string,
 }
 
-export type TAppAction = ITestAction;
+export interface ISelectFilterSetItem{
+    type:"SelectFilterSetItem",
+    itemName:string
+}
+
+export interface ISetLogRowActions{
+    type:"SetLogRowActions",
+    actions: ILogRowAction[]
+}
+
+
+
+export type TAppAction = ISelectFilterSetFolder|ISelectFilterSetItem|ISetLogRowActions;
 
 const appReducer:Reducer<IAppSettings,TAppAction> = (state = initAppSettings,action)=>{
     let newState = {...state};
     switch (action.type){
-        case 'TestAction':
-            newState.testSetting = action.testSetting;
+        case 'SelectFilterSetFolder':
+            newState.filterSetFolderName = action.folderName;
             return newState;
-            break; 
+            break;
+        case 'SelectFilterSetItem':
+            newState.filterSetItemName = action.itemName;
+            return newState;
+            break;
+        case 'SetLogRowActions':
+            newState.logRowActions = action.actions;
+            return newState;
+            break;
     }
     return state;
 }   

@@ -190,9 +190,20 @@ async function GetActionsImpl(params:IGetActions){
         let filePath = path.join(params.folderPath, fname);  
         try{
             const data = fs.readFileSync(filePath,'utf-8');
+            const regex = /^((?:\/\/[^\n]*\n?)*)\s*([\s\S]*)$/m;
+            let m = regex.exec(data);
+            if(m?.length !== 3){
+                response.isOk = false;
+                response.error = `Неверный формат файла ${filePath}`;
+                return response;
+            }
+            //@ts-ignore
+            let ainfo = JSON.parse(m[1].replaceAll("//",""));
+            let srcCode = m[2];
+            ainfo.name = path.parse(fname).name;
             const newItem:ILogRowAction = {
-                name:path.parse(fname).name,
-                jsSourceCode:data
+                info:ainfo,
+                jsSourceCode:srcCode
             };
             response.result?.push(newItem);
         } catch(error){

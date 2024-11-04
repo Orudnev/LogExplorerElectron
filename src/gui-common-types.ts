@@ -1,5 +1,5 @@
 import { TreeItemIndex } from "react-complex-tree";
-import { IFilterSetBase, ILogRow, ITreeItemSimple } from "./common-types";
+import { IFilterSetBase, ILogRow, ILogRowAction, ITreeItemSimple } from "./common-types";
 
 
 export interface IFilterPanelRowValue {
@@ -11,6 +11,7 @@ export interface ITreeItemData {
     operation:TFilterOperation;
     label?:string,
     value:string;
+    actionName?:string;
   }
 
 export interface IFilterPanelRow {
@@ -43,11 +44,12 @@ export type TFilterOperation = keyof typeof FILTER_OPERATIONS;
 
 
 export function GetAllFilterOperations():string[]{
-let result = [];
-for(const opr in FILTER_OPERATIONS){
-    result.push(opr);
+  let result = [];
+  for(const opr in FILTER_OPERATIONS){
+      result.push(opr);
+  }
+  return result;
 }
-return result;
-}
+
 
   
