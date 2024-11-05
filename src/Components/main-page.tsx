@@ -5,13 +5,14 @@ import dayjs, { Dayjs } from 'dayjs';
 import { ApiWrapper } from '../api-wrapper';
 import { MultiSelect, Option } from './multi-select';
 import { ToolbarButton, ToolbarCheckButton } from './toolbar-button';
-import { ILogRow, LogRowResult} from '../common-types';
+import { ILogRow, ITreeItemSimple, LogRowResult} from '../common-types';
 import { AppGlobal } from '../app';
 import { AppSessionData } from './AppData';
 import { FilterPanel } from './filter-panel';
-import { IFilterPanelRowValue } from '../gui-common-types';
+import { ApplyFilterTreeResult, IFilterPanelRowValue, IFilterTreeItemResult, ITreeItemData } from '../gui-common-types';
 
 
+var lastTreeItemIndex = -1;
 
 //"proxy": "http://localhost:5000/api/",
 export function MainPage() {
@@ -26,6 +27,7 @@ export function MainPage() {
     const [severityFltValue, setSeverityFltValue] = useState(AppSessionData.prop('SeverityFilter'));
     const [error, setError] = useState("");
     const datagrid = useGridApiRef();
+    const appSettings = AppGlobal.getState().AppReducer;
     if (isLoading) { 
         return (<div>'Loading...'</div>);
     }
@@ -37,6 +39,9 @@ export function MainPage() {
         { field: 'Img', headerName: 'Err', width: 50 },
         { field: 'Comment', headerName: 'Comment', width: 4000 }
     ];
+    if(lastTreeItemIndex == -1 ){
+        //appSettings.logRowActions[0].info.
+    }
     return (
         <div className='main-page'>
             <div className='main-page-toolbar'>
@@ -91,24 +96,25 @@ export function MainPage() {
                         : (
                             <div className='filter-panel-wrapper'>
                                 <FilterPanel  dataRows={rowList}
-                                    onChange={(frows:any, isFilterOn:any, showSelItemsOnly:any, grpFilter:any) => {
-                                        let newRows = ApplyFilter(allRowList, frows, isFilterOn, showSelItemsOnly,  grpFilter);
-                                        let cr = currRow;
-                                        let dg = datagrid;
-                                        if (newRows.length > 0) {
-                                            setRowList(newRows);
-                                            if (!isFilterOn && currRow && currRow.id > -1) {
-                                                dg.current.selectRow(currRow.id, true);
-                                                let pgSize = 100;
-                                                let pageNum = Math.trunc(currRow.id / 100);
-                                                let positionOnPage = currRow.id % pgSize;
-                                                dg.current.setPageSize(pgSize);
-                                                setTimeout(() => { 
-                                                    dg.current.setPage(pageNum);                                                    
-                                                    dg.current.scrollToIndexes({rowIndex:currRow.id});
-                                                }, 100);
-                                            }
-                                        }
+                                    onChange={() => {
+                                        ProccessLogRows(rowList);
+                                        // let newRows = ApplyFilter(allRowList, frows, isFilterOn, showSelItemsOnly,  grpFilter);
+                                        // let cr = currRow;
+                                        // let dg = datagrid;
+                                        // if (newRows.length > 0) {
+                                        //     setRowList(newRows);
+                                        //     if (!isFilterOn && currRow && currRow.id > -1) {
+                                        //         dg.current.selectRow(currRow.id, true);
+                                        //         let pgSize = 100;
+                                        //         let pageNum = Math.trunc(currRow.id / 100);
+                                        //         let positionOnPage = currRow.id % pgSize;
+                                        //         dg.current.setPageSize(pgSize);
+                                        //         setTimeout(() => { 
+                                        //             dg.current.setPage(pageNum);                                                    
+                                        //             dg.current.scrollToIndexes({rowIndex:currRow.id});
+                                        //         }, 100);
+                                        //     }
+                                        // }
                                     }}
                                 />
                                 {/* <FilterPanelTotals grpFilterValue={groupFilter} rows={rowList} onGroupFilterChanged={(flt)=>{
@@ -189,9 +195,49 @@ export function MainPage() {
             </div>
         </div>
     );
+} 
+
+function ProccessLogRows(allRows: ILogRow[]){
+    const isMatched = (item:ITreeItemSimple<ITreeItemData>,row:ILogRow)=>{
+        if(!item.data || !item.data.value){
+            return false;
+        }
+        switch(item.data.operation){
+            case 'Contains':
+                return row.Comment.includes(item.data.value);
+            case 'NotContain':
+                return !row.Comment.includes(item.data.value);
+            case 'Regex':
+                let re = new RegExp(item.data.value);
+                let m = re.exec(row.Comment);
+                if(m){
+                    return true;
+                }
+        }
+        return false;
+    };
+    
+    const treeRows = AppGlobal.getAppSettings().filterSetItem?.filterTree;
+    AppGlobal.resetCurrentTreeItemIndex();
+    while(ApplyFilterTreeResult.length>0){
+        ApplyFilterTreeResult.pop();
+    }
+    allRows.forEach(logRow=>{
+        let s = ApplyFilterTreeResult;
+        treeRows?.find(treeRow=>{
+            if(isMatched(treeRow,logRow)){
+                let newRow:IFilterTreeItemResult = {
+                    logRowid:logRow.id,
+                    treeItemIndex:treeRow.index
+                }
+                let s = ApplyFilterTreeResult;
+                ApplyFilterTreeResult.push(newRow);
+                return true;                
+            }
+        });
+    });
+    let s = ApplyFilterTreeResult;
 }
-
-
 
 function ApplyFilter(allRows: ILogRow[], allFltRows: IFilterPanelRowValue[], isFilterOn: boolean, showSelItemsOnly:boolean, grpFilter: number): ILogRow[] {
     let skipList = allFltRows.filter(itm=>itm.mustSkip === true);

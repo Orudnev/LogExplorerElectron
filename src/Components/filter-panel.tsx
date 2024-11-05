@@ -80,7 +80,6 @@ function FilterPanelRow(props: IFilterPanelRow) {
 
 export function FilterPanel(props: IFilterPanel) {
     const [filterTree, setFilterTree] = useState(props.filterTree);
-    const [showSelItems, setShowSelItems] = useState(false);
     const [filterFileContent, setFilterFileContent] = useState<IFilterSetFolder[]>([]);
     const [selectedFolder, setSelectedFolder] = useState('');
     const [selectedFilterSet, setSelectedFilterSet] = useState('');
@@ -114,7 +113,7 @@ export function FilterPanel(props: IFilterPanel) {
                                 .find(itm => itm.name.toLocaleLowerCase() === AppSessionData.prop('LastSelectedFilterSet').toLocaleLowerCase());
                         if (storedFset) {
                             setSelectedFilterSet(storedFset.name);
-                            AppGlobal.dispatch({type:'SelectFilterSetItem',itemName:storedFset.name});
+                            AppGlobal.dispatch({type:'SelectFilterSetItem',item:storedFset});
                             setFilterTree(storedFset.filterTree);
                         }
                     }
@@ -196,11 +195,11 @@ export function FilterPanel(props: IFilterPanel) {
                     selectedItem={selectedFilterSet}
                     onSelected={(selFset) => {
                         setSelectedFilterSet(selFset);
-                        AppGlobal.dispatch({type:'SelectFilterSetItem',itemName:selFset});
                         let fsetItem = getFilterSet(selFset)
                         if (fsetItem) {
                             AppSessionData.prop('LastSelectedFolder', selectedFolder);
                             AppSessionData.prop('LastSelectedFilterSet', selFset);
+                            AppGlobal.dispatch({type:'SelectFilterSetItem',item:fsetItem});
                             setFilterTree(undefined);  
                             setTimeout(() => {
                                 setFilterTree(fsetItem?.filterTree);                                
@@ -217,7 +216,7 @@ export function FilterPanel(props: IFilterPanel) {
                         if (folderItem) {
                             folderItem.filterSetList.push(newItem);
                             setSelectedFilterSet(item);
-                            AppGlobal.dispatch({type:'SelectFilterSetItem',itemName:item});
+                            AppGlobal.dispatch({type:'SelectFilterSetItem',item:newItem});
                         }
                     }}
                     onDelete={(item) => {
@@ -228,7 +227,7 @@ export function FilterPanel(props: IFilterPanel) {
                     }}
                 />
                 <ToolbarButton toolTip='Применить изменения' image='apply' size='48' onClick={() => {
-                    //props.onChange(frows, isFilterOn, showSelItems, groupFilter);
+                    props.onChange();
                 }} />
                 <ToolbarButton toolTip='Сохранить' image='save' size='48' onClick={() => {
                             saveFolder();

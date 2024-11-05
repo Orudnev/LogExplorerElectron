@@ -27,7 +27,7 @@ export interface IFilterPanelRow {
 export interface IFilterPanel {
     filterTree?:ITreeItemSimple<ITreeItemData>[];
     dataRows: ILogRow[];
-    onChange: (frows: IFilterPanelRowValue[], isFilterOn: boolean, showSelItemsOnly:boolean, grpFilter: number) => void;
+    onChange: () => void;
   }
 
 const FILTER_OPERATIONS = {
@@ -41,8 +41,6 @@ export type TFilterSet = IFilterSetBase<ITreeItemData>;
   
 export type TFilterOperation = keyof typeof FILTER_OPERATIONS;
 
-
-
 export function GetAllFilterOperations():string[]{
   let result = [];
   for(const opr in FILTER_OPERATIONS){
@@ -51,5 +49,12 @@ export function GetAllFilterOperations():string[]{
   return result;
 }
 
+export interface IFilterTreeItemResult{
+  logRowid:number;
+  treeItemIndex:TreeItemIndex;
+  error?:string;
+}
+
+export const ApplyFilterTreeResult:IFilterTreeItemResult[] = [];
 
   

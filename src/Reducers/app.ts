@@ -1,15 +1,16 @@
 import { Reducer } from 'redux';
-import { ILogRowAction } from '../common-types';
+import { IFilterSetBase, ILogRowAction } from '../common-types';
+import { ITreeItemData } from '../gui-common-types';
 
 
 export interface IAppSettings {
+    filterSetItem:IFilterSetBase<ITreeItemData>|undefined;
     filterSetFolderName: string;
-    filterSetItemName:string;
     logRowActions:ILogRowAction[];
 }
 export const initAppSettings: IAppSettings = {
     filterSetFolderName:"",
-    filterSetItemName:"",
+    filterSetItem:undefined,
     logRowActions:[]
 };
 
@@ -20,7 +21,7 @@ export interface ISelectFilterSetFolder{
 
 export interface ISelectFilterSetItem{
     type:"SelectFilterSetItem",
-    itemName:string
+    item:IFilterSetBase<ITreeItemData>
 }
 
 export interface ISetLogRowActions{
@@ -40,7 +41,7 @@ const appReducer:Reducer<IAppSettings,TAppAction> = (state = initAppSettings,act
             return newState;
             break;
         case 'SelectFilterSetItem':
-            newState.filterSetItemName = action.itemName;
+            newState.filterSetItem = action.item;
             return newState;
             break;
         case 'SetLogRowActions':
