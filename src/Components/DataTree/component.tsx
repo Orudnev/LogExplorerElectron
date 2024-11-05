@@ -3,8 +3,9 @@ import { UncontrolledTreeEnvironment,ControlledTreeEnvironment, Tree, StaticTree
 import 'react-complex-tree/lib/style-modern.css';
 import './data-tree.css';
 import { GetDtItemEditor, GetDtItemToolbar } from './DTItems';
-import { ITreeItemData } from '../../gui-common-types';
+import { ApplyFilterTreeResult, ITreeItemData } from '../../gui-common-types';
 import { ITreeItemSimple } from '../../common-types';
+import Badge from '@mui/material/Badge';
 
 
 export const emptyTreeData:ITreeItemSimple<ITreeItemData>[] = [
@@ -182,10 +183,20 @@ export const DataTree = forwardRef<IDataTreeAPI,IDataTreeProps<ITreeItemData>>((
             if(datat && datat.label){
               lblText = datat.label;
             }
+            let fltRowResult = ApplyFilterTreeResult.filter(itm=>itm.treeItemIndex === item.index);
             if(item.index === selItemIdx){
-              return <span className='item-title-sel'>{lblText}</span>;                
+              return (
+                <Badge badgeContent={fltRowResult.length} color="info" max={99999}>
+                  <span className='item-title-sel'>{lblText}</span>;                
+                </Badge>
+              ); 
+              
             }
-            return <span>{lblText}</span>;              
+            return (
+            <Badge badgeContent={fltRowResult.length} color="info" max={99999}>
+              <span>{lblText}</span>;              
+            </Badge>
+            );
           }}
           renderItemArrow={({ item, context }) =>{
           if(item.isFolder){

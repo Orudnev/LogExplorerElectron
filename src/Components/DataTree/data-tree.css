@@ -46,6 +46,12 @@
     background-color:#ffc8b8;
 }
 
+.tree-item-container li .MuiBadge-badge{
+    position: relative;
+    left:-15px;
+    top:8px;
+}
+
 .icon{
     display: inline-block;
     margin-right: 5px;

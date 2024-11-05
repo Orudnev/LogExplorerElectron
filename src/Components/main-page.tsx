@@ -98,6 +98,7 @@ export function MainPage() {
                                 <FilterPanel  dataRows={rowList}
                                     onChange={() => {
                                         ProccessLogRows(rowList);
+                                        setRowList([...rowList]);
                                         // let newRows = ApplyFilter(allRowList, frows, isFilterOn, showSelItemsOnly,  grpFilter);
                                         // let cr = currRow;
                                         // let dg = datagrid;
@@ -203,8 +204,6 @@ function ProccessLogRows(allRows: ILogRow[]){
             return false;
         }
         switch(item.data.operation){
-            case 'Contains':
-                return row.Comment.includes(item.data.value);
             case 'NotContain':
                 return !row.Comment.includes(item.data.value);
             case 'Regex':
@@ -213,6 +212,10 @@ function ProccessLogRows(allRows: ILogRow[]){
                 if(m){
                     return true;
                 }
+                break;
+            case 'Contains':
+            default:
+                return row.Comment.includes(item.data.value);
         }
         return false;
     };
@@ -223,20 +226,19 @@ function ProccessLogRows(allRows: ILogRow[]){
         ApplyFilterTreeResult.pop();
     }
     allRows.forEach(logRow=>{
-        let s = ApplyFilterTreeResult;
+        logRow.Result = LogRowResult.undefined;
         treeRows?.find(treeRow=>{
             if(isMatched(treeRow,logRow)){
+                logRow.Result = LogRowResult.highlighted;
                 let newRow:IFilterTreeItemResult = {
                     logRowid:logRow.id,
                     treeItemIndex:treeRow.index
                 }
-                let s = ApplyFilterTreeResult;
                 ApplyFilterTreeResult.push(newRow);
                 return true;                
             }
         });
     });
-    let s = ApplyFilterTreeResult;
 }
 
 function ApplyFilter(allRows: ILogRow[], allFltRows: IFilterPanelRowValue[], isFilterOn: boolean, showSelItemsOnly:boolean, grpFilter: number): ILogRow[] {
