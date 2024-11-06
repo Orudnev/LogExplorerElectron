@@ -1,0 +1,11 @@
+.txfld-with-codecompletion .choise-list{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+}
+
+.txfld-with-codecompletion .choise-list_item__selected{
+    background-color:#acccf1;
+}
+

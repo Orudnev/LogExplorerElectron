@@ -100,3 +100,6 @@
 .dt-editor #value{
     min-width: 600px;
 }
+.dt-editor #log-expr{
+    min-width: 600px;
+}

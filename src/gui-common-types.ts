@@ -11,6 +11,7 @@ export interface ITreeItemData {
     operation:TFilterOperation;
     label?:string,
     value:string;
+    logicalExpression?:string;
     actionName?:string;
   }
 
