@@ -17,6 +17,7 @@ export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
     const [leOpen, setleOpen] = useState(false); 
     const [filteredChoiseList,setFilteredChoiseList] = useState<string[]>([]); 
     const [selectedChoiseListItemIndex,setSelectedChoiseListItemIndex] = useState(0); 
+    const [selectionStart,setSelectionStart] = useState(-1);
     const styles: SxProps = {
         position: 'absolute',
         top: 40,
@@ -51,17 +52,27 @@ export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
                             }                    
                             setLePosition(xoffset);
                             setleOpen(true);
+                            let ss = (e.target as HTMLInputElement).selectionStart;
+                            if(ss){
+                                setSelectionStart(ss);
+                            }
                         } else{
                             if(leOpen){
                                 if(e.key == 'ArrowDown'){
                                     if(selectedChoiseListItemIndex<filteredChoiseList.length-1){
                                         setSelectedChoiseListItemIndex(selectedChoiseListItemIndex+1);
                                     }
+                                    if(selectionStart != -1){
+                                        (e.target as HTMLInputElement).setSelectionRange(selectionStart,selectionStart);
+                                    }
                                     return;    
                                 }
                                 if(e.key == 'ArrowUp'){
                                     if(selectedChoiseListItemIndex>0){
                                         setSelectedChoiseListItemIndex(selectedChoiseListItemIndex-1);
+                                    }
+                                    if(selectionStart != -1){
+                                        (e.target as HTMLInputElement).setSelectionRange(selectionStart,selectionStart);
                                     }
                                     return;    
                                 }              
@@ -70,11 +81,15 @@ export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
                                     let inputHtml = e.target as HTMLInputElement;
                                     if(inputHtml.selectionStart){
                                         let position = inputHtml.selectionStart;
-                                        let newValue = props.value.substring(0,position)+lookupValue+props.value.substring(position+1);
+                                        let newValue = props.value.substring(0,position)+lookupValue+props.value.substring(position);
+                                        let newPosiion = position + lookupValue.length;
                                         if(props.onChange){
                                             props.onChange(newValue);
                                             setleOpen(false);
                                             setSelectedChoiseListItemIndex(0);
+                                            setTimeout(() => {
+                                                (e.target as HTMLInputElement).setSelectionRange(newPosiion,newPosiion);
+                                            }, 0);
                                         }
                                     }
                                     return;    
