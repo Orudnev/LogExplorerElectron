@@ -5,17 +5,70 @@ import { SxProps } from '@mui/material';
 import { useState } from 'react';
 import './component.css';
 
-export interface ITextFldWithCodeCompletion{
+export interface IChoiseItemData{
+    label:string;
+    iconClass?:string;
+    retValue?:string|(()=>string);
+}
+
+export interface ITextFldWithCodeCompletionProps{
     id:string;
     value:string;
     onChange?:(newValue:string)=>void;
-    choiseList:string[];
+    choiseObject:object;
 }
 
-export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
+function GetObjectMember(obj: any, pathchain: string): any {
+    if (!obj || !pathchain) return null;
+
+    const properties = pathchain.split('.');
+
+    let currentObject: any = obj;
+    for (const property of properties) {
+        if (currentObject === null || currentObject === undefined) {
+            return null;
+        }
+        currentObject = currentObject[property];
+    }
+
+    return currentObject;
+}
+
+function getMatchedChoiseItems(choiseObject:any,searchCriteria?:string):IChoiseItemData[]{
+    let allItems:IChoiseItemData[] = [];
+    for (let key in choiseObject){
+        let item = choiseObject[key];
+        let itemType = typeof item;
+        let newItem:IChoiseItemData = {label:key};
+        switch (itemType){
+            case 'string':
+                break;
+            case 'object':
+                break;
+            case 'function':
+                newItem.label += "()";
+                break;
+        }       
+        allItems.push(newItem);
+
+    }
+    if(searchCriteria){
+        if(searchCriteria.includes('.')){
+            let path = searchCriteria.substring(0,searchCriteria.lastIndexOf("."));
+            let nestedObj = GetObjectMember(choiseObject,path);
+            if(nestedObj){
+                allItems = getMatchedChoiseItems(nestedObj);
+            }
+            let s = 1;
+        }
+    }
+    return allItems;
+}
+
+export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletionProps){
     const [lePosition,setLePosition] = useState(0);
     const [leOpen, setleOpen] = useState(false); 
-    const [filteredChoiseList,setFilteredChoiseList] = useState<string[]>([]); 
+    const [filteredChoiseList,setFilteredChoiseList] = useState<IChoiseItemData[]>([]); 
     const [selectedChoiseListItemIndex,setSelectedChoiseListItemIndex] = useState(0); 
     const [selectionStart,setSelectionStart] = useState(-1);
     const styles: SxProps = {
@@ -38,7 +91,8 @@ export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
                             let xoffset = GetTextInputPositionInPixels(e.target as HTMLInputElement);
                             let searchCriteria = GetNearestWord(e.target as HTMLInputElement);
                             if(searchCriteria){
-                                let filteredItems = props.choiseList.filter(itm=>itm.includes(searchCriteria));
+                                let filteredItems =getMatchedChoiseItems(props.choiseObject,searchCriteria);
+                                //let filteredItems = props.choiseList.filter(itm=>itm.label.toLowerCase().includes(searchCriteria.toLowerCase()));
                                 if(filteredItems && filteredItems.length>0){
                                     // Показываем отфильтрованные элементы
                                     setFilteredChoiseList(filteredItems)
@@ -48,7 +102,7 @@ export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
                                 }
                             } else {
                                 //Показываем все элементы
-                                setFilteredChoiseList(props.choiseList);
+                                setFilteredChoiseList(getMatchedChoiseItems(props.choiseObject));
                             }                    
                             setLePosition(xoffset);
                             setleOpen(true);
@@ -77,11 +131,19 @@ export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
                                     return;    
                                 }              
                                 if(e.key == 'Enter'){
-                                    let lookupValue = filteredChoiseList[selectedChoiseListItemIndex];
+                                    let lookupItem = filteredChoiseList[selectedChoiseListItemIndex];
+                                    let lookupValue = lookupItem.label;
+                                    if(lookupItem.retValue){
+                                        if(typeof lookupItem.retValue === 'function' ){
+                                            lookupValue = lookupItem.retValue();
+                                        } else {
+                                            lookupValue = lookupItem.retValue;
+                                        }
+                                    }
                                     let inputHtml = e.target as HTMLInputElement;
-                                    if(inputHtml.selectionStart){
+                                    if(inputHtml.selectionStart || inputHtml.selectionStart == 0){
                                         let position = inputHtml.selectionStart;
-                                        let newValue = props.value.substring(0,position)+lookupValue+props.value.substring(position);
+                                        let newValue = props.value.substring(0,position)+"d."+lookupValue+props.value.substring(position);
                                         let newPosiion = position + lookupValue.length;
                                         if(props.onChange){
                                             props.onChange(newValue);
@@ -121,22 +183,22 @@ export function TextFldWithCodeCompletion(props:ITextFldWithCodeCompletion){
 
 
 
-function ChoiseItem(props:{index:number,value:string,selected:boolean}){
+function ChoiseItem(props:{index:number,data:IChoiseItemData,selected:boolean}){
     let clsStr = '';
     if(props.selected){
         clsStr = 'choise-list_item__selected'
     }
     return (
-        <div className={clsStr}> {props.value}</div>
+        <div className={clsStr}> {props.data.label}</div>
     )
 }
 
-function ChoiseList(props:{itemValues:string[],selectedIndex:number}){
+function ChoiseList(props:{itemValues:IChoiseItemData[],selectedIndex:number}){
     return (
         <div className='choise-list'>
             {props.itemValues.map((itm,index)=>
                <ChoiseItem index={index} 
-                    value={itm} 
+                    data={itm} 
                     selected={index == props.selectedIndex} 
                     />)}
         </div>

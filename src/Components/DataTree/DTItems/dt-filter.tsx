@@ -7,8 +7,7 @@ import { GetAllFilterOperations, ITreeItemData, TFilterOperation } from '../../.
 import { ApiWrapper } from '../../../api-wrapper';
 import { ILogRowAction } from '../../../common-types';
 import { AppGlobal } from '../../../app';
-import { TextFldWithCodeCompletion } from '../../TextFldWithCodeCompletion/component';
-
+import { IChoiseItemData, TextFldWithCodeCompletion } from '../../TextFldWithCodeCompletion/component';
 
 
 export function DtFilter(props: IEditorProps) {
@@ -74,7 +73,7 @@ export function DtFilter(props: IEditorProps) {
         />
         <TextFldWithCodeCompletion id='log-expr' 
             value={logExpr} 
-            choiseList={['aaa','bbb','ccc','ddd']}
+            choiseObject={AppGlobal.ddConnector.DictObject}
             onChange={(newValue)=>{
                 if (props.onValueChanged) {
                     result.logicalExpression = newValue;

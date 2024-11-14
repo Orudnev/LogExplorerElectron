@@ -227,7 +227,8 @@ export function FilterPanel(props: IFilterPanel) {
                     }}
                 />
                 <ToolbarButton toolTip='Применить изменения' image='apply' size='48' onClick={() => {
-                    props.onChange();
+                    loadLogRowActions(selectedFolder);
+                    props.onChange();                    
                 }} />
                 <ToolbarButton toolTip='Сохранить' image='save' size='48' onClick={() => {
                             saveFolder();

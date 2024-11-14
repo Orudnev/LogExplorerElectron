@@ -234,6 +234,30 @@ function ProccessLogRows(allRows: ILogRow[]){
                     logRowid:logRow.id,
                     treeItemIndex:treeRow.index
                 }
+                if(treeRow.data?.actionName){
+                    let act = AppGlobal.getAppSettings().logRowActions.find(itm=>itm.info.name === treeRow.data?.actionName);
+                    let sc = act?.jsSourceCode;
+                    AppGlobal.ddConnector.DictObject.CurrentLogRow = logRow;
+                    let expr = `(()=>{let func=${sc}; return func();})()`;
+                    try{
+                        let result = eval(expr);
+                    } 
+                    catch(err){
+                        console.log(err);
+                    }
+                }
+                if(treeRow.data?.logicalExpression){
+                    let d = AppGlobal.ddConnector.DictObject;
+                    let exprStr = treeRow.data?.logicalExpression;
+                    try{
+                        let result = eval(exprStr);
+                        if(!result){
+                            return false;
+                        }
+                    } catch(err){
+                        console.log(err);
+                    }
+                }
                 ApplyFilterTreeResult.push(newRow);
                 return true;                
             }

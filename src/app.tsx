@@ -17,15 +17,17 @@ import { store, TAllActions, IAppState } from './Reducers/index';
 import * as Api from './api-wrapper';
 import { MainPage } from './Components/main-page';
 import { Settings } from './Components/settings';
-import { ITreeItemSimple } from './common-types';
+import { ILogRow, ITreeItemSimple } from './common-types';
 import { ITreeItemData } from './gui-common-types';
 import { TreeItemIndex } from 'react-complex-tree';
+import { IChoiseItemData } from './Components/TextFldWithCodeCompletion/component';
 
 
 class AppGlobalClass {
   private navfunc: NavigateFunction | undefined = undefined;
-  dispatchFunc: any = undefined;
   private CurrentTreeItemIndex:TreeItemIndex = -1;
+  dispatchFunc: any = undefined;
+  ddConnector:DynamicCodeConnectorClass = new DynamicCodeConnectorClass();  
   constructor() {
     this.getState = this.getState.bind(this);
     this.navigate = this.navigate.bind(this);
@@ -62,11 +64,7 @@ class AppGlobalClass {
   getAppSettings(){
     return this.getState().AppReducer;
   }
-
-  calculatePath(){
-
-  }
-
+  
   setCurrentTreeItemIndex(newIndex:TreeItemIndex){
     this.CurrentTreeItemIndex = newIndex;
   }
@@ -77,7 +75,7 @@ class AppGlobalClass {
   }
 
   //Проверяет indForCheck на валидность
-  vlidateTreeItemIndex(indForCheck:TreeItemIndex):boolean{
+  validateTreeItemIndex(indForCheck:TreeItemIndex):boolean{
     //indForCheck индекс элемента дерева по которому произошло совпадение условия фильтра
     //CurrentTreeItemIndex - текущий элемент дерева (последний элемент по которому валидация прошла успешно)
     //Валидными считаются следующие элементы дерева относительно indForCheck
@@ -151,6 +149,17 @@ class AppGlobalClass {
     return false;//5
   }
 
+}
+
+class DynamicCodeConnectorClass{
+  DictObject:any={};
+  constructor(){
+    let emptyLogRow:ILogRow = {id:-1,Date:undefined,RowLineNumber:-1,Comment:"",Severity:"",ThreadId:undefined};
+    this.DictObject.CurrentLogRow = emptyLogRow;
+    this.DictObject.Contains = (searchStr:string)=>{
+      return this.DictObject.CurrentLogRow.Comment.includes(searchStr);
+    }
+  }
 }
 
 export const AppGlobal = new AppGlobalClass();
