@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
+import {connect} from "react-redux";
+
 import { DataGridPro, GridColDef, GridCellParams, useGridApiRef } from '@mui/x-data-grid-pro';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
@@ -15,12 +17,11 @@ import { ApplyFilterTreeResult, IFilterPanelRowValue, IFilterTreeItemResult, ITr
 var lastTreeItemIndex = -1;
 
 //"proxy": "http://localhost:5000/api/",
-export function MainPage() {
+function MainPageImpl() {
     let dfltRows: ILogRow[] = [];
     let dfltCurrRow: ILogRow = { id: -1, RowLineNumber: -1, Severity: "", Date: undefined, ThreadId: undefined, Comment: "" };
     const [allRowList, setAllRowList] = useState(dfltRows);
     const [rowList, setRowList] = useState(dfltRows);
-    const [currRow, setCurrRow] = useState<ILogRow>(dfltCurrRow);
     const [dateFrom, setDateFrom] = React.useState<Dayjs | null>(dayjs(new Date(AppSessionData.prop('TsFromFilter'))));
     const [dateTo, setDateTo] = React.useState<Dayjs | null>(dayjs(new Date(AppSessionData.prop('TsToFilter'))));
     const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +29,11 @@ export function MainPage() {
     const [error, setError] = useState("");
     const datagrid = useGridApiRef();
     const appSettings = AppGlobal.getState().AppReducer;
+    let currRow:ILogRow = dfltCurrRow;
+    let cr = rowList.find(r=>r.id === AppGlobal.getState().AppReducer.selectedLogRowUid);
+    if(cr){
+        currRow = cr;
+    }
     if (isLoading) { 
         return (<div>'Loading...'</div>);
     }
@@ -39,8 +45,9 @@ export function MainPage() {
         { field: 'Img', headerName: 'Err', width: 50 },
         { field: 'Comment', headerName: 'Comment', width: 4000 }
     ];
-    if(lastTreeItemIndex == -1 ){
-        //appSettings.logRowActions[0].info.
+    if(currRow.id>-1 && datagrid.current){
+        datagrid.current.selectRows([currRow.id],true,true);
+        datagrid.current.scrollToIndexes({rowIndex:currRow.id});
     }
     return (
         <div className='main-page'>
@@ -161,7 +168,7 @@ export function MainPage() {
                             let s = 1;
                         }}
                         onRowClick={(par, ev) => {
-                            setCurrRow(par.row);
+                            AppGlobal.dispatch({type:'SelectLogRow',uid:par.id})
                             if(ev.nativeEvent.ctrlKey){
                                 let trow = par.row as ILogRow;
                                 if(!trow.Result){
@@ -197,6 +204,14 @@ export function MainPage() {
         </div>
     );
 } 
+
+
+const mapStateToProps = (state:any,ownProps:any)=>{
+    return state;
+}
+
+export const MainPage = connect(mapStateToProps)(MainPageImpl);
+
 
 function ProccessLogRows(allRows: ILogRow[]){
     const isMatched = (item:ITreeItemSimple<ITreeItemData>,row:ILogRow)=>{
