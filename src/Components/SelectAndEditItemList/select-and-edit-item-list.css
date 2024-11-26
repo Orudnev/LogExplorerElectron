@@ -75,3 +75,17 @@
 .sel-edit-itmlist .mode-add-newitem .error-text_hide {
     color: transparent;
 }
+
+#menu-  .MuiPaper-root{
+    overflow: visible;
+}
+
+#menu- .popup-description{
+    position:absolute;
+    width: 300px;
+    border: solid 1px #0366d6;
+    border-radius: 10px;
+    background-color: white;
+    padding: 8px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}

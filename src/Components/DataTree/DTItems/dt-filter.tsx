@@ -36,10 +36,14 @@ export function DtFilter(props: IEditorProps) {
     const operatorList = GetAllFilterOperations();
     const result: ITreeItemData = { ...props.treeItem.data };
     const lrActions = AppGlobal.getState().AppReducer.logRowActions;
-    const lrActionNames = lrActions.map(itm => itm.info.name);
-
+    const lrActionNames = lrActions.map(itm => {return {label:itm.info.name,description:itm.info.description}});
+    let selActionDescription:string|undefined = "";
+    let selActionData = lrActionNames.find(itm => itm.label === selAction);
+    if (selActionData) {
+        selActionDescription = selActionData.description;
+    }
     return (<div className='dt-editor'>
-        <SelectFromList id='operator' itemList={operatorList} caption='Operator'
+        <SelectFromList id='operator' itemList={operatorList.map(itm => {return {label:itm}})} caption='Operator'
             onChange={(selItem) => {
                 if (props.onValueChanged) {
                     result.operation = selItem as TFilterOperation;

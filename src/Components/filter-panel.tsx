@@ -96,7 +96,7 @@ export function FilterPanel(props: IFilterPanel) {
                 let s = err;
             });                            
         }        
-    };
+    }; 
     useEffect(() => {
         ApiWrapper.LoadFilterSetFile() 
             .then((flist) => {

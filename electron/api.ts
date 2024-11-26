@@ -188,6 +188,9 @@ async function GetActionsImpl(params:IGetActions){
     allFiles.forEach(jsFileName=>{
         let fname = jsFileName;
         let filePath = path.join(params.folderPath, fname);  
+        if(fname.toLowerCase().endsWith('.bak')){
+            return;
+        }
         try{
             const data = fs.readFileSync(filePath,'utf-8');
             const regex = /^((?:\/\/[^\n]*\n?)*)\s*([\s\S]*)$/m;
