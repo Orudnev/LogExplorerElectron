@@ -85,7 +85,7 @@
     width: 300px;
     border: solid 1px #0366d6;
     border-radius: 10px;
-    background-color: white;
+    background: radial-gradient(circle, rgb(253, 238, 185) 19%, rgb(246, 215, 143) 100%);
     padding: 8px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
