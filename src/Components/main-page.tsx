@@ -249,18 +249,6 @@ function ProccessLogRows(allRows: ILogRow[]){
                     logRowid:logRow.id,
                     treeItemIndex:treeRow.index
                 }
-                if(treeRow.data?.actionName){
-                    let act = AppGlobal.getAppSettings().logRowActions.find(itm=>itm.info.name === treeRow.data?.actionName);
-                    let sc = act?.jsSourceCode;
-                    AppGlobal.ddConnector.DictObject.CurrentLogRow = logRow;
-                    let expr = `(()=>{let func=${sc}; return func();})()`;
-                    try{
-                        let result = eval(expr);
-                    } 
-                    catch(err){
-                        console.log(err);
-                    }
-                }
                 if(treeRow.data?.logicalExpression){
                     let d = AppGlobal.ddConnector.DictObject;
                     let exprStr = treeRow.data?.logicalExpression;
@@ -270,6 +258,18 @@ function ProccessLogRows(allRows: ILogRow[]){
                             return false;
                         }
                     } catch(err){
+                        console.log(err);
+                    }
+                }
+                if(treeRow.data?.actionName){
+                    let act = AppGlobal.getAppSettings().logRowActions.find(itm=>itm.info.name === treeRow.data?.actionName);
+                    let sc = act?.jsSourceCode;
+                    AppGlobal.ddConnector.DictObject.CurrentLogRow = logRow;
+                    let expr = `(()=>{let func=${sc}; return func();})()`;
+                    try{
+                        let result = eval(expr);
+                    } 
+                    catch(err){
                         console.log(err);
                     }
                 }

@@ -72,7 +72,7 @@ export function SelectFromList(props: ISelectFromList) {
                 {items}
                 {anchorEl
                     ? <div className='popup-description' style={{top:anchorEl.offsetTop+10+"px",left:180+"px"}} >{selectedItemDescription}</div>
-                    :<></>
+                    :<div/>
                 }
             </Select>
         </FormControl >
